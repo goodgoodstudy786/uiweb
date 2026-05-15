@@ -1,0 +1,16 @@
+node_modules/
+dist/
+uploads/
+.chrome-*/
+.chrome*/
+preview-*.png
+target-circle*
+preview-*
+case-*.png
+feature-*.png
+home-*.png
+hover-*.png
+works-*.png
+top-*.png
+*.log
+.DS_Store

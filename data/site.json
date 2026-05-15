@@ -1,0 +1,332 @@
+{
+  "meta": {
+    "title": "林若安 界面设计师",
+    "description": "林若安，界面设计师个人官网。展示产品界面设计、设计系统、作品案例、关于我与灵感收藏。"
+  },
+  "brand": {
+    "line1": "林若安",
+    "line2": "界面设计师",
+    "loaderLabel": "林若安设计"
+  },
+  "navigationTitle": "导航",
+  "worksSection": {
+    "title": "作品",
+    "badge": "精选项目"
+  },
+  "navigation": [
+    { "label": "首页", "href": "#top" },
+    { "label": "作品", "href": "#works" },
+    { "label": "关于我", "href": "#about" },
+    { "label": "灵感库", "href": "/inspiration.html" },
+    { "label": "联系", "href": "#contact" }
+  ],
+  "hero": {
+    "titleLine1": "设计并交付。",
+    "titleLine2": "周级，不等月。",
+    "copy": "以产品思维、界面秩序和设计系统，把想法从模糊需求推进到可上线的高保真体验。",
+    "ctaLabel": "查看作品"
+  },
+  "ticker": [
+    "产品界面设计",
+    "设计系统",
+    "移动端体验",
+    "企业端工作台",
+    "品牌视觉",
+    "交互原型"
+  ],
+  "redBand": {
+    "title": "我适合那些不只需要执行，还需要一起定义方向的团队。",
+    "subtitle": "梳理问题，搭建界面，持续迭代。"
+  },
+  "capabilities": [
+    "体验策略",
+    "界面视觉",
+    "原型交互",
+    "组件规范",
+    "数据看板",
+    "移动应用",
+    "软件服务",
+    "品牌官网",
+    "智能工具",
+    "设计审查",
+    "可用性优化",
+    "交付协作"
+  ],
+  "works": [
+    {
+      "id": "coop",
+      "slug": "coop",
+      "title": "协作平台体验重构",
+      "meta": "产品策略、网页应用、设计系统、交付规范",
+      "href": "./case.html?case=coop",
+      "visual": {
+        "variant": "feature",
+        "browserLabel": "协作平台 / 工作台",
+        "sidebarTitle": "项目中心",
+        "sidebarItems": ["任务总览", "团队权限", "设计交付", "版本记录"],
+        "highlightLabel": "本周重点",
+        "highlightValue": "上线前走查",
+        "stats": [
+          { "label": "进行中", "value": "24" },
+          { "label": "待确认", "value": "08" },
+          { "label": "已交付", "value": "116" }
+        ]
+      }
+    },
+    {
+      "id": "growth",
+      "slug": "growth",
+      "title": "增长数据工作台",
+      "meta": "数据可视化、企业端后台、指标体系",
+      "href": "./case.html?case=growth",
+      "visual": {
+        "variant": "dashboard",
+        "browserLabel": "增长数据 / 仪表盘",
+        "chartTitle": "转化趋势",
+        "bars": [34, 58, 44, 86, 49, 61],
+        "metrics": ["访问 48.6万", "转化 12.8%", "留存 71%"]
+      }
+    },
+    {
+      "id": "mobile",
+      "slug": "mobile",
+      "title": "生活方式移动应用",
+      "meta": "移动界面、会员体系、轻量动效",
+      "href": "./case.html?case=mobile",
+      "visual": {
+        "variant": "mobile",
+        "browserLabel": "生活方式 / 移动端",
+        "phoneLabel": "会员中心",
+        "phoneTitle": "今日灵感",
+        "phoneCard": "已完成 3 个任务",
+        "listCount": 3
+      }
+    }
+  ],
+  "about": {
+    "eyebrow": "关于我",
+    "titleBefore": "我不是只做漂亮界面的设计师。我的工作是把复杂需求整理成",
+    "titleAccent": "清晰、可执行、可持续迭代",
+    "titleAfter": "的产品体验。",
+    "stats": [
+      {
+        "value": "8+",
+        "title": "年经验",
+        "description": "长期服务软件服务产品、智能工具、企业协作与消费应用项目。"
+      },
+      {
+        "value": "32",
+        "title": "上线项目",
+        "description": "从需求梳理到高保真交付，覆盖完整产品设计流程。"
+      },
+      {
+        "value": "6套",
+        "title": "设计系统",
+        "description": "建立组件规范、视觉变量和团队协作的统一语言。"
+      }
+    ]
+  },
+  "services": {
+    "eyebrow": "服务",
+    "title": "端到端设计交付。一个人，也能像一间高效工作室。",
+    "description": "从产品结构、视觉探索、组件体系到开发标注，把每一步都压缩到清晰节奏里。",
+    "items": [
+      {
+        "step": "01",
+        "title": "产品界面",
+        "description": "为网页应用、移动端和后台系统建立清晰的信息层级、关键流程和视觉表达。"
+      },
+      {
+        "step": "02",
+        "title": "设计系统",
+        "description": "定义颜色、字体、间距、组件状态和使用规则，让产品扩展时仍保持一致。"
+      },
+      {
+        "step": "03",
+        "title": "品牌官网",
+        "description": "把个人、产品或团队的核心价值转换成强记忆点的网页叙事与视觉节奏。"
+      },
+      {
+        "step": "04",
+        "title": "交付协作",
+        "description": "提供原型、标注、组件说明和走查记录，减少设计到开发之间的损耗。"
+      }
+    ]
+  },
+  "process": {
+    "eyebrow": "工作方式",
+    "title": "快速推进，但不跳过判断。",
+    "items": [
+      {
+        "step": "01",
+        "title": "对齐目标",
+        "description": "确认产品阶段、用户角色、核心指标和设计边界，先把问题定义准确。"
+      },
+      {
+        "step": "02",
+        "title": "冲刺设计",
+        "description": "用线框、关键页面和交互原型快速验证方向，在高保真之前排除误差。"
+      },
+      {
+        "step": "03",
+        "title": "系统化交付",
+        "description": "沉淀组件、状态、规范和页面模板，让后续迭代不必重新开始。"
+      },
+      {
+        "step": "04",
+        "title": "上线走查",
+        "description": "跟进开发还原、移动端适配、异常状态和细节体验，确保真正落地。"
+      }
+    ]
+  },
+  "inspiration": {
+    "eyebrow": "收藏灵感库",
+    "titleLine1": "持续收藏，",
+    "titleLine2": "会被下一次项目用上的设计观察。",
+    "description": "不按时间排列，只留下值得反复打开的界面、系统和交互想法。",
+    "detailButtonLabel": "立即前往",
+    "items": [
+      {
+        "slug": "immersive-workbench",
+        "title": "沉浸式工作台布局",
+        "description": "用分层的布局把信息、动作和状态放在同一视线带，减少来回找按钮的时间。",
+        "body": [
+          "把信息、动作和状态放进同一条视线带里，先减少切换，再谈效率。",
+          "这种做法适合多步骤的管理后台和高频协作场景，让用户一眼看到下一步该做什么。"
+        ],
+        "ctaLabel": "立即前往",
+        "ctaHref": "https://example.com"
+      },
+      {
+        "slug": "state-naming",
+        "title": "组件状态命名",
+        "description": "把默认、悬停、选中、禁用这些状态统一成一套命名，能让团队沟通更快一点。",
+        "body": [
+          "默认、悬停、选中、禁用等状态最好用同一套命名规则来表达，设计、开发和评审时都更容易对齐。",
+          "当状态命名稳定后，组件文档也会更清楚，后续补新状态时不容易打乱结构。"
+        ],
+        "ctaLabel": "立即前往",
+        "ctaHref": "https://example.com"
+      },
+      {
+        "slug": "empty-state-emotion",
+        "title": "空状态的情绪设计",
+        "description": "空状态不只补信息，也要给用户一个明确的下一步，不让页面显得太冷。",
+        "body": [
+          "空状态不只补信息，也要给用户一个明确的下一步，不让页面显得太冷。",
+          "当没有内容时，依然应该保留方向感、鼓励感和可继续行动的入口。"
+        ],
+        "ctaLabel": "立即前往",
+        "ctaHref": "https://example.com"
+      },
+      {
+        "slug": "low-saturation-system",
+        "title": "低饱和撞色系统",
+        "description": "把高识别颜色放在关键按钮和重点信息上，其余区域保持安静，画面会更稳。",
+        "body": [
+          "把高识别颜色放在关键按钮和重点信息上，其余区域保持安静，画面会更稳。",
+          "这种配色方式适合信息密度较高的界面，让视觉重心更集中，也更利于长期浏览。"
+        ],
+        "ctaLabel": "立即前往",
+        "ctaHref": "https://example.com"
+      }
+    ]
+  },
+  "cta": {
+    "eyebrow": "你的产品，离清晰体验只差一次对齐。",
+    "titleLine1": "停止等待。",
+    "titleLine2": "开始设计。",
+    "description": "把你的项目背景发给我，我会在 24 小时内回复设计路径、范围和合作方式。",
+    "buttonLabel": "开始项目"
+  },
+  "contact": {
+    "intro": "留下你的联系方式，我会把合作回复和作品更新发给你。",
+    "placeholder": "你的联系方式",
+    "buttonLabel": "联系我",
+    "feedback": "已收到，我会尽快联系你。"
+  },
+  "footer": {
+    "brandDescription": "专注产品界面、设计系统、品牌官网和高质量设计交付。",
+    "servicesTitle": "服务",
+    "servicesLinks": [
+      { "label": "产品界面", "href": "#works" },
+      { "label": "关于我", "href": "#about" },
+      { "label": "灵感收藏", "href": "/inspiration.html" }
+    ],
+    "contactTitle": "联系",
+    "contactLinks": [
+      { "label": "邮箱", "href": "mailto:hello@ruoan.design" },
+      { "label": "站酷", "href": "#" },
+      { "label": "作品集", "href": "#" },
+      { "label": "小红书", "href": "#" }
+    ],
+    "copyright": "© 2026 林若安设计。保留所有权利。",
+    "email": "hello@ruoan.design"
+  },
+  "leadModal": {
+    "title": "留下电话，我会尽快联系你。",
+    "description": "填写手机号后提交到后台，方便我直接回复你的项目需求。",
+    "inputPlaceholder": "请输入手机号",
+    "submitLabel": "提交"
+  },
+  "cases": [
+    {
+      "id": "coop",
+      "slug": "coop",
+      "type": "协作平台 / 工作台",
+      "title": "协作平台体验重构",
+      "summary": [
+        "把任务、权限、交付和版本记录收进一个更容易扫描的工作台，减少跳转，让团队协作更顺手。",
+        "这个版本的重点是重新整理信息层级，让最常用的动作先出现在视线里，再用更稳定的组件状态承接后续协作。"
+      ],
+      "visual": {
+        "variant": "feature",
+        "browserLabel": "协作平台 / 工作台",
+        "sidebarTitle": "项目中心",
+        "sidebarItems": ["任务总览", "团队权限", "设计交付", "版本记录"],
+        "highlightLabel": "本周重点",
+        "highlightValue": "上线前走查",
+        "stats": [
+          { "label": "进行中", "value": "24" },
+          { "label": "待确认", "value": "08" },
+          { "label": "已交付", "value": "116" }
+        ]
+      }
+    },
+    {
+      "id": "growth",
+      "slug": "growth",
+      "type": "数据可视化 / 仪表盘",
+      "title": "增长数据工作台",
+      "summary": [
+        "把分散的指标、趋势和异常提示收进一个更高密度的看板，帮助运营和产品更快做决定。",
+        "页面强调信息优先级和可读性，让最关键的数字始终处在第一眼就能被读到的位置。"
+      ],
+      "visual": {
+        "variant": "dashboard",
+        "browserLabel": "增长数据 / 仪表盘",
+        "chartTitle": "转化趋势",
+        "bars": [34, 58, 44, 86, 49, 61],
+        "metrics": ["访问 48.6万", "转化 12.8%", "留存 71%"]
+      }
+    },
+    {
+      "id": "mobile",
+      "slug": "mobile",
+      "type": "移动界面 / 会员体系",
+      "title": "生活方式移动应用",
+      "summary": [
+        "把会员中心、内容推荐和日常任务合并成更轻的手机体验，让用户在移动端更容易完成关键动作。",
+        "通过更清晰的卡片层级和简短的动效节奏，保留轻盈感，也让转化路径更顺。"
+      ],
+      "visual": {
+        "variant": "mobile",
+        "browserLabel": "生活方式 / 移动端",
+        "phoneLabel": "会员中心",
+        "phoneTitle": "今日灵感",
+        "phoneCard": "已完成 3 个任务",
+        "listCount": 3
+      }
+    }
+  ]
+}

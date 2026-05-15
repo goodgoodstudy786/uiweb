@@ -1,0 +1,22 @@
+{
+  "name": "uiweb",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "main": "index.html",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 8787",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0 --port 8787"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3",
+    "vite": "^5.4.0"
+  }
+}

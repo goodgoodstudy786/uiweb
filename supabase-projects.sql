@@ -1,0 +1,70 @@
+insert into public.projects (
+  slug, title, category, summary, layout_variant,
+  cover_image_path, cover_image_url, cover_image_alt,
+  detail_image_path, detail_image_url, detail_image_alt,
+  detail_paragraphs, sort_order, published
+)
+values
+  (
+    'coop',
+    '协作平台体验重构',
+    '协作平台 / 工作台',
+    '把任务、权限、交付和版本记录收进一个更容易扫描的工作台，减少跳转，让团队协作更顺手。',
+    'feature',
+    null,
+    null,
+    '协作平台体验重构封面',
+    null,
+    null,
+    '协作平台体验重构详情',
+    '["把任务、权限、交付和版本记录收进一个更容易扫描的工作台。","通过重新整理层级和状态，减少来回切换，把常用动作放到更显眼的位置。"]'::jsonb,
+    1,
+    true
+  ),
+  (
+    'growth',
+    '增长数据工作台',
+    '数据可视化 / 仪表盘',
+    '把分散的指标、趋势和异常提示收进一个更高密度的看板，帮助运营和产品更快做决定。',
+    'dashboard',
+    null,
+    null,
+    '增长数据工作台封面',
+    null,
+    null,
+    '增长数据工作台详情',
+    '["把分散的指标、趋势和异常提示收进一个更高密度的看板。","页面强调信息优先级和可读性，让最关键的数字始终处在第一眼就能被读到的位置。"]'::jsonb,
+    2,
+    true
+  ),
+  (
+    'mobile',
+    '生活方式移动应用',
+    '移动界面 / 会员系统',
+    '把会员中心、任务状态和轻量内容收进一个更柔和的移动体验里，让用户更轻松完成日常操作。',
+    'mobile',
+    null,
+    null,
+    '生活方式移动应用封面',
+    null,
+    null,
+    '生活方式移动应用详情',
+    '["把会员中心、任务状态和轻量内容收进一个更柔和的移动体验里。","页面重点是让界面看起来轻，但常用动作依然明确可见。"]'::jsonb,
+    3,
+    true
+  )
+on conflict (slug) do update
+set title = excluded.title,
+    category = excluded.category,
+    summary = excluded.summary,
+    layout_variant = excluded.layout_variant,
+    cover_image_path = excluded.cover_image_path,
+    cover_image_url = excluded.cover_image_url,
+    cover_image_alt = excluded.cover_image_alt,
+    detail_image_path = excluded.detail_image_path,
+    detail_image_url = excluded.detail_image_url,
+    detail_image_alt = excluded.detail_image_alt,
+    detail_paragraphs = excluded.detail_paragraphs,
+    sort_order = excluded.sort_order,
+    published = excluded.published,
+    updated_at = timezone('utc', now());
