@@ -148,7 +148,7 @@ async function loadSiteData() {
       .single();
     
     if (error) {
-      console.error("Supabase 加载错误:", error.message);
+      console.warn("Supabase 加载错误:", error.message);
     }
     
     if (data && !error) {
@@ -157,18 +157,31 @@ async function loadSiteData() {
       return;
     }
   } catch (e) {
-    console.error("Failed to load from Supabase:", e);
+    console.warn("Failed to load from Supabase:", e);
   }
   
   // 如果 Supabase 失败，从本地文件加载
   try {
-    const response = await fetch(DATA_URL);
-    if (!response.ok) throw new Error("Failed to load site data");
+    const baseUrl = window.location.pathname.includes("/uiweb/") ? "/uiweb/" : "/";
+    const response = await fetch(`${baseUrl}data/site.json`);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
     siteData = await response.json();
     console.log("从本地文件加载成功");
+    return;
   } catch (error) {
-    console.error("Load site data failed:", error);
-    showToast("加载数据失败", "error");
+    console.error("从本地文件加载失败:", error);
+  }
+  
+  // 最后尝试相对路径
+  try {
+    const response = await fetch("data/site.json");
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    siteData = await response.json();
+    console.log("从相对路径加载成功");
+    return;
+  } catch (error) {
+    console.error("所有数据源加载失败:", error);
+    showToast("加载数据失败，请检查网络连接", "error");
   }
 }
 
