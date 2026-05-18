@@ -110,14 +110,17 @@ input {
   align-items: center;
   gap: 10px;
   color: #fff;
-  font-weight: 900;
+  font-weight: 400;
   letter-spacing: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
 }
 
 .brand-name {
   display: block;
   font-size: 17px;
-  line-height: 0.92;
+  line-height: 1.1;
+  font-weight: 500;
+  letter-spacing: 0.5px;
 }
 
 .logo-mark {

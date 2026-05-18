@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>测试前后台数据同步</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .test-section {
+      background: white;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h1 { color: #333; }
+    h2 { color: #666; margin-top: 0; }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 5px;
+    }
+    button:hover { background: #0056b3; }
+    button.danger { background: #dc3545; }
+    button.danger:hover { background: #c82333; }
+    button.success { background: #28a745; }
+    button.success:hover { background: #218838; }
+    pre {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 4px;
+      overflow-x: auto;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .status {
+      padding: 10px;
+      border-radius: 4px;
+      margin: 10px 0;
+    }
+    .status.success { background: #d4edda; color: #155724; }
+    .status.error { background: #f8d7da; color: #721c24; }
+    .status.info { background: #d1ecf1; color: #0c5460; }
+  </style>
+</head>
+<body>
+  <h1>前后台数据同步测试</h1>
+  
+  <div class="test-section">
+    <h2>1. 清除 localStorage 数据</h2>
+    <button class="danger" onclick="clearStorage()">清除所有数据</button>
+    <div id="clear-status"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>2. 模拟后台保存数据</h2>
+    <button onclick="saveTestData()">保存测试数据</button>
+    <div id="save-status"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>3. 模拟前台读取数据</h2>
+    <button class="success" onclick="loadAndCheck()">读取并检查数据</button>
+    <div id="load-status"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>4. 当前 localStorage 数据</h2>
+    <button onclick="showStorage()">显示数据</button>
+    <pre id="storage-data">点击"显示数据"查看</pre>
+  </div>
+
+  <div class="test-section">
+    <h2>5. 测试结果</h2>
+    <pre id="test-result">等待测试...</pre>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "site_data";
+
+    function clearStorage() {
+      localStorage.removeItem(STORAGE_KEY);
+      document.getElementById('clear-status').innerHTML = '<div class="status success">已清除 localStorage 数据</div>';
+    }
+
+    function saveTestData() {
+      // 模拟后台保存的数据
+      const testData = {
+        meta: {
+          title: "测试站点标题",
+          description: "这是一个测试站点描述"
+        },
+        brand: {
+          line1: "测试品牌",
+          line2: "Test Brand",
+          loaderLabel: "加载中..."
+        },
+        navigationTitle: "测试导航",
+        navigation: [
+          { label: "首页", href: "#top" },
+          { label: "作品", href: "works.html" },
+          { label: "关于我", href: "#about" }
+        ],
+        hero: {
+          titleLine1: "测试主标题上行",
+          titleLine2: "测试主标题下行",
+          copy: "这是测试副标题描述",
+          ctaLabel: "测试按钮",
+          ctaHref: "#works"
+        },
+        ticker: ["测试滚动文字1", "测试滚动文字2", "测试滚动文字3"],
+        redBand: {
+          title: "测试红色横幅标题",
+          subtitle: "测试红色横幅副标题"
+        },
+        capabilities: ["能力1", "能力2", "能力3"],
+        worksSection: {
+          badge: "测试作品徽章",
+          title: "测试作品标题",
+          pageHref: "#works"
+        },
+        about: {
+          eyebrow: "关于我",
+          titleBefore: "测试",
+          titleAccent: "关于",
+          titleAfter: "我",
+          stats: [
+            { value: "10+", title: "年经验", description: "测试描述" },
+            { value: "50+", title: "个项目", description: "测试描述" },
+            { value: "100+", title: "个客户", description: "测试描述" }
+          ]
+        },
+        services: {
+          eyebrow: "服务",
+          title: "测试服务标题",
+          description: "测试服务描述",
+          items: [
+            { title: "服务1", description: "服务1描述" },
+            { title: "服务2", description: "服务2描述" },
+            { title: "服务3", description: "服务3描述" }
+          ]
+        },
+        process: {
+          eyebrow: "流程",
+          title: "测试流程标题",
+          items: [
+            { title: "流程1", description: "流程1描述" },
+            { title: "流程2", description: "流程2描述" },
+            { title: "流程3", description: "流程3描述" },
+            { title: "流程4", description: "流程4描述" }
+          ]
+        },
+        inspiration: {
+          eyebrow: "灵感库",
+          titleLine1: "测试灵感",
+          titleLine2: "库",
+          description: "测试灵感描述",
+          detailButtonLabel: "立即前往",
+          pageHref: "inspiration.html",
+          items: []
+        },
+        cta: {
+          eyebrow: "联系我们",
+          titleLine1: "测试CTA",
+          titleLine2: "标题",
+          description: "测试CTA描述",
+          buttonLabel: "测试按钮",
+          buttonHref: "#works"
+        },
+        contact: {
+          intro: "测试联系介绍",
+          placeholder: "测试占位符",
+          buttonLabel: "测试发送",
+          feedback: "测试反馈"
+        },
+        footer: {
+          brandDescription: "测试页脚描述",
+          servicesTitle: "测试服务",
+          contactTitle: "测试联系",
+          email: "test@example.com",
+          copyright: "© 2024 测试版权",
+          servicesLinks: [
+            { label: "服务1", href: "#" },
+            { label: "服务2", href: "#" },
+            { label: "服务3", href: "#" }
+          ],
+          contactLinks: [
+            { label: "微信", href: "#" },
+            { label: "邮箱", href: "mailto:test@example.com" }
+          ]
+        },
+        leadModal: {
+          title: "测试弹窗标题",
+          description: "测试弹窗描述",
+          inputPlaceholder: "测试输入框",
+          submitLabel: "测试提交"
+        }
+      };
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(testData));
+      document.getElementById('save-status').innerHTML = '<div class="status success">已保存测试数据到 localStorage</div>';
+    }
+
+    function loadAndCheck() {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (!stored) {
+        document.getElementById('load-status').innerHTML = '<div class="status error">localStorage 中没有数据</div>';
+        document.getElementById('test-result').textContent = '测试失败：localStorage 中没有数据';
+        return;
+      }
+
+      try {
+        const parsed = JSON.parse(stored);
+        
+        // 验证数据有效性
+        if (parsed && typeof parsed === "object" && parsed.brand && parsed.hero) {
+          document.getElementById('load-status').innerHTML = '<div class="status success">数据验证成功！</div>';
+          
+          // 检查关键字段
+          const checks = [
+            { name: "brand.line1", value: parsed.brand.line1, expected: "测试品牌" },
+            { name: "hero.titleLine1", value: parsed.hero.titleLine1, expected: "测试主标题上行" },
+            { name: "hero.titleLine2", value: parsed.hero.titleLine2, expected: "测试主标题下行" },
+            { name: "hero.copy", value: parsed.hero.copy, expected: "这是测试副标题描述" },
+            { name: "redBand.title", value: parsed.redBand.title, expected: "测试红色横幅标题" }
+          ];
+
+          let allPassed = true;
+          let resultText = "测试结果：\n\n";
+          
+          checks.forEach(check => {
+            const passed = check.value === check.expected;
+            resultText += `${passed ? "✓" : "✗"} ${check.name}: ${check.value || "(空)"} ${passed ? "" : `(期望: ${check.expected})`}\n`;
+            if (!passed) allPassed = false;
+          });
+
+          if (allPassed) {
+            resultText += "\n✓ 所有测试通过！前后台数据同步正常。";
+            document.getElementById('test-result').textContent = resultText;
+          } else {
+            resultText += "\n✗ 部分测试失败，请检查数据格式。";
+            document.getElementById('test-result').textContent = resultText;
+          }
+        } else {
+          document.getElementById('load-status').innerHTML = '<div class="status error">数据验证失败：缺少 brand 或 hero 字段</div>';
+          document.getElementById('test-result').textContent = '测试失败：数据格式不正确';
+        }
+      } catch (e) {
+        document.getElementById('load-status').innerHTML = '<div class="status error">解析数据失败：' + e.message + '</div>';
+        document.getElementById('test-result').textContent = '测试失败：' + e.message;
+      }
+    }
+
+    function showStorage() {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          document.getElementById('storage-data').textContent = JSON.stringify(parsed, null, 2);
+        } catch (e) {
+          document.getElementById('storage-data').textContent = '解析失败：' + e.message;
+        }
+      } else {
+        document.getElementById('storage-data').textContent = 'localStorage 中没有数据';
+      }
+    }
+  </script>
+</body>
+</html>

@@ -108,15 +108,37 @@ function showLogin() {
   document.getElementById("admin-app")!.innerHTML = `
     <div class="admin-login-container">
       <div class="admin-login-card">
-        <h1 class="admin-login-title">管理后台登录</h1>
+        <div class="admin-login-header">
+          <div class="admin-login-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+            </svg>
+          </div>
+          <h1 class="admin-login-title">后台管理系统</h1>
+          <p class="admin-login-subtitle">请输入管理员密码以继续</p>
+        </div>
         <form class="admin-login-form" id="login-form">
           <div class="admin-form-group">
-            <label class="admin-form-label">密码</label>
-            <input type="password" class="admin-form-input" id="admin-password" placeholder="请输入管理密码" />
+            <div class="admin-password-wrapper">
+              <input type="password" class="admin-form-input admin-password-input" id="admin-password" placeholder="请输入密码" autocomplete="current-password" />
+              <button type="button" class="admin-toggle-password" id="toggle-password">
+                <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
           </div>
-          <button type="submit" class="admin-btn admin-btn-primary admin-btn-block">登录</button>
+          <button type="submit" class="admin-btn admin-btn-primary admin-btn-block">
+            <span>登 录</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </button>
         </form>
-        <p class="admin-login-hint">默认密码：admin123</p>
+      </div>
+      <div class="admin-login-footer">
+        <p>Protected Area</p>
       </div>
     </div>
   `;
@@ -129,6 +151,18 @@ function showLogin() {
       init();
     } else {
       showToast("密码错误", "error");
+    }
+  });
+
+  document.getElementById("toggle-password")?.addEventListener("click", () => {
+    const input = document.getElementById("admin-password") as HTMLInputElement;
+    const btn = document.getElementById("toggle-password");
+    if (input.type === "password") {
+      input.type = "text";
+      btn?.classList.add("active");
+    } else {
+      input.type = "password";
+      btn?.classList.remove("active");
     }
   });
 }
@@ -253,10 +287,14 @@ function renderSidebar() {
   return `
     <aside class="admin-sidebar">
       <div class="admin-sidebar-brand">
-        <div class="brand-icon">L</div>
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
         <div>
-          <div class="brand-text">林若安设计</div>
-          <div class="brand-sub">管理后台</div>
+          <div class="brand-text">后台管理系统</div>
+          <div class="brand-sub">Content Management</div>
         </div>
       </div>
       <nav class="admin-sidebar-nav">
