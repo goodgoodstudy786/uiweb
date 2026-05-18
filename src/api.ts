@@ -431,16 +431,33 @@ async function loadFallbackSiteData(): Promise<HomeSiteData> {
 }
 
 export async function getSiteData(): Promise<HomeSiteData> {
-  if (!HAS_SUPABASE) {
-    return loadFallbackSiteData();
+  // 优先检查 localStorage 是否有后台修改的数据
+  const stored = localStorage.getItem("site_data");
+  if (stored) {
+    try {
+      const parsed = JSON.parse(stored);
+      console.log("从 localStorage 加载后台修改的数据");
+      return {
+        homepage: normalizeHomepageContent(parsed),
+        projects: buildFallbackProjects(),
+        socialLinks: buildFallbackSocialLinks(),
+      };
+    } catch (e) {
+      console.error("解析 localStorage 数据失败:", e);
+    }
   }
 
-  try {
-    return await loadSupabaseSiteData();
-  } catch (error) {
-    console.warn("Supabase data load failed, falling back to local fixture.", error);
-    return loadFallbackSiteData();
+  // 如果没有 localStorage 数据，尝试从 Supabase 加载
+  if (HAS_SUPABASE) {
+    try {
+      return await loadSupabaseSiteData();
+    } catch (error) {
+      console.warn("Supabase 加载失败，使用默认数据:", error);
+    }
   }
+
+  // 最后使用默认数据
+  return loadFallbackSiteDataSync();
 }
 
 function storeLeadDraft(input: LeadSubmissionInput) {

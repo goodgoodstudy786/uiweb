@@ -185,38 +185,36 @@ async function loadSiteData() {
   }
 }
 
-async function saveToSupabase() {
+async function saveSiteData() {
   if (!siteData) return;
   
-  // 先保存到 localStorage 作为回退
+  collectFormData();
+  
+  // 保存到 localStorage（主要存储方式）
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(siteData));
     console.log("已保存到 localStorage");
+    showToast("保存成功！", "success");
   } catch (e) {
     console.error("localStorage 保存失败:", e);
+    showToast("保存失败", "error");
+    return;
   }
   
-  // 再尝试保存到 Supabase
+  // 后台尝试同步到 Supabase（不影响用户体验）
   try {
     const { error } = await supabase
       .from("homepage")
       .upsert({ slug: "main", content: siteData, is_active: true }, { onConflict: "slug" });
     
     if (error) {
-      console.error("Supabase 保存错误:", error.message, error.details);
-      showToast("已保存到本地，云端同步失败: " + error.message, "error");
-      return;
+      console.warn("Supabase 同步失败:", error.message);
+    } else {
+      console.log("已同步到 Supabase");
     }
-    showToast("保存成功，已同步到云端", "success");
   } catch (error) {
-    console.error("Save to Supabase failed:", error);
-    showToast("已保存到本地，云端同步失败", "error");
+    console.warn("Supabase 同步失败:", error);
   }
-}
-
-function saveSiteData() {
-  collectFormData();
-  saveToSupabase();
 }
 
 function showToast(message: string, type: "success" | "error" = "success") {
