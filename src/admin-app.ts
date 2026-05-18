@@ -139,7 +139,27 @@ function logout() {
 }
 
 async function loadSiteData() {
-  // 优先从 Supabase 加载
+  // 优先从 localStorage 加载（后台修改的数据）
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      // 验证数据有效性
+      if (parsed && parsed.brand && parsed.hero) {
+        siteData = parsed;
+        console.log("从 localStorage 加载成功");
+        return;
+      } else {
+        console.warn("localStorage 数据无效，重新加载");
+        localStorage.removeItem(STORAGE_KEY);
+      }
+    }
+  } catch (e) {
+    console.warn("localStorage 加载失败:", e);
+    localStorage.removeItem(STORAGE_KEY);
+  }
+
+  // 从 Supabase 加载
   try {
     const { data, error } = await supabase
       .from("homepage")
@@ -147,26 +167,26 @@ async function loadSiteData() {
       .eq("slug", "main")
       .single();
     
-    if (error) {
-      console.warn("Supabase 加载错误:", error.message);
-    }
-    
-    if (data && !error) {
+    if (data && !error && data.content && data.content.brand) {
       siteData = data.content as SiteData;
       console.log("从 Supabase 加载成功");
+      // 同步到 localStorage
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(siteData));
       return;
     }
   } catch (e) {
-    console.warn("Failed to load from Supabase:", e);
+    console.warn("Supabase 加载失败:", e);
   }
   
-  // 如果 Supabase 失败，从本地文件加载
+  // 从本地文件加载
   try {
     const baseUrl = window.location.pathname.includes("/uiweb/") ? "/uiweb/" : "/";
     const response = await fetch(`${baseUrl}data/site.json`);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     siteData = await response.json();
     console.log("从本地文件加载成功");
+    // 同步到 localStorage
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(siteData));
     return;
   } catch (error) {
     console.error("从本地文件加载失败:", error);
@@ -178,10 +198,11 @@ async function loadSiteData() {
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     siteData = await response.json();
     console.log("从相对路径加载成功");
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(siteData));
     return;
   } catch (error) {
-    console.error("所有数据源加载失败:", error);
-    showToast("加载数据失败，请检查网络连接", "error");
+    console.error("所有数据源加载失败，使用默认数据:", error);
+    showToast("加载数据失败，使用默认数据", "error");
   }
 }
 

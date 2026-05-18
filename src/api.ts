@@ -436,14 +436,21 @@ export async function getSiteData(): Promise<HomeSiteData> {
   if (stored) {
     try {
       const parsed = JSON.parse(stored);
-      console.log("从 localStorage 加载后台修改的数据");
-      return {
-        homepage: normalizeHomepageContent(parsed),
-        projects: buildFallbackProjects(),
-        socialLinks: buildFallbackSocialLinks(),
-      };
+      // 验证数据有效性
+      if (parsed && parsed.brand && parsed.hero && parsed.brand.line1) {
+        console.log("从 localStorage 加载后台修改的数据");
+        return {
+          homepage: normalizeHomepageContent(parsed),
+          projects: buildFallbackProjects(),
+          socialLinks: buildFallbackSocialLinks(),
+        };
+      } else {
+        console.warn("localStorage 数据无效，清除并使用默认数据");
+        localStorage.removeItem("site_data");
+      }
     } catch (e) {
       console.error("解析 localStorage 数据失败:", e);
+      localStorage.removeItem("site_data");
     }
   }
 
@@ -457,6 +464,7 @@ export async function getSiteData(): Promise<HomeSiteData> {
   }
 
   // 最后使用默认数据
+  console.log("使用默认数据");
   return loadFallbackSiteDataSync();
 }
 
