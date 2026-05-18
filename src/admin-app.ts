@@ -147,8 +147,13 @@ async function loadSiteData() {
       .eq("slug", "main")
       .single();
     
+    if (error) {
+      console.error("Supabase 加载错误:", error.message);
+    }
+    
     if (data && !error) {
       siteData = data.content as SiteData;
+      console.log("从 Supabase 加载成功");
       return;
     }
   } catch (e) {
@@ -160,6 +165,7 @@ async function loadSiteData() {
     const response = await fetch(DATA_URL);
     if (!response.ok) throw new Error("Failed to load site data");
     siteData = await response.json();
+    console.log("从本地文件加载成功");
   } catch (error) {
     console.error("Load site data failed:", error);
     showToast("加载数据失败", "error");

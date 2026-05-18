@@ -156,11 +156,11 @@ function normalizeHref(href: string | undefined, fallback = "/") {
   }
 
   if (href === "#inspiration") {
-    return "/inspiration.html";
+    return "inspiration.html";
   }
 
   if (href.startsWith("./")) {
-    return `/${href.slice(2)}`;
+    return href.slice(2);
   }
 
   if (href.startsWith("#")) {
@@ -168,7 +168,12 @@ function normalizeHref(href: string | undefined, fallback = "/") {
       return "/";
     }
 
-    return `/${href}`;
+    return href;
+  }
+
+  // 移除开头的 / 使其成为相对路径，适配 GitHub Pages
+  if (href.startsWith("/")) {
+    return href.slice(1);
   }
 
   return href;
