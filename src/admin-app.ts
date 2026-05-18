@@ -1233,86 +1233,117 @@ function showInspirationModal(index: number) {
 function collectFormData() {
   if (!siteData) return;
 
-  const getVal = (id: string) => (document.getElementById(id) as HTMLInputElement | HTMLTextAreaElement | null)?.value || "";
+  const getVal = (id: string) => {
+    const el = document.getElementById(id) as HTMLInputElement | HTMLTextAreaElement | null;
+    return el?.value?.trim() || "";
+  };
 
-  siteData.meta.title = getVal("site-meta-title");
-  siteData.meta.description = getVal("site-meta-desc");
-  siteData.brand.line1 = getVal("site-brand-line1");
-  siteData.brand.line2 = getVal("site-brand-line2");
-  siteData.brand.loaderLabel = getVal("site-brand-loader");
-  siteData.navigationTitle = getVal("site-nav-title");
+  // 只更新非空值，保留已有数据
+  const setVal = (obj: any, key: string, value: string) => {
+    if (value !== "") {
+      obj[key] = value;
+    }
+  };
 
-  siteData.hero.titleLine1 = getVal("hero-title1");
-  siteData.hero.titleLine2 = getVal("hero-title2");
-  siteData.hero.copy = getVal("hero-copy");
-  siteData.hero.ctaLabel = getVal("hero-cta");
-  siteData.ticker = getVal("hero-ticker").split("\n").filter(line => line.trim());
-  siteData.redBand.title = getVal("redband-title");
-  siteData.redBand.subtitle = getVal("redband-subtitle");
-  siteData.capabilities = getVal("capabilities").split("\n").filter(line => line.trim());
-  siteData.worksSection.title = getVal("works-section-title");
-  siteData.worksSection.badge = getVal("works-section-badge");
+  setVal(siteData.meta, "title", getVal("site-meta-title"));
+  setVal(siteData.meta, "description", getVal("site-meta-desc"));
+  setVal(siteData.brand, "line1", getVal("site-brand-line1"));
+  setVal(siteData.brand, "line2", getVal("site-brand-line2"));
+  setVal(siteData.brand, "loaderLabel", getVal("site-brand-loader"));
+  siteData.navigationTitle = getVal("site-nav-title") || siteData.navigationTitle;
 
-  siteData.about.eyebrow = getVal("about-eyebrow");
-  siteData.about.titleBefore = getVal("about-title-before");
-  siteData.about.titleAccent = getVal("about-title-accent");
-  siteData.about.titleAfter = getVal("about-title-after");
+  setVal(siteData.hero, "titleLine1", getVal("hero-title1"));
+  setVal(siteData.hero, "titleLine2", getVal("hero-title2"));
+  setVal(siteData.hero, "copy", getVal("hero-copy"));
+  setVal(siteData.hero, "ctaLabel", getVal("hero-cta"));
+  
+  const tickerVal = getVal("hero-ticker");
+  if (tickerVal) {
+    siteData.ticker = tickerVal.split("\n").filter(line => line.trim());
+  }
+  
+  setVal(siteData.redBand, "title", getVal("redband-title"));
+  setVal(siteData.redBand, "subtitle", getVal("redband-subtitle"));
+  
+  const capabilitiesVal = getVal("capabilities");
+  if (capabilitiesVal) {
+    siteData.capabilities = capabilitiesVal.split("\n").filter(line => line.trim());
+  }
+  
+  setVal(siteData.worksSection, "title", getVal("works-section-title"));
+  setVal(siteData.worksSection, "badge", getVal("works-section-badge"));
+
+  setVal(siteData.about, "eyebrow", getVal("about-eyebrow"));
+  setVal(siteData.about, "titleBefore", getVal("about-title-before"));
+  setVal(siteData.about, "titleAccent", getVal("about-title-accent"));
+  setVal(siteData.about, "titleAfter", getVal("about-title-after"));
   siteData.about.stats.forEach((stat, index) => {
-    stat.value = getVal(`about-stat-value-${index}`);
-    stat.title = getVal(`about-stat-title-${index}`);
-    stat.description = getVal(`about-stat-desc-${index}`);
+    const value = getVal(`about-stat-value-${index}`);
+    const title = getVal(`about-stat-title-${index}`);
+    const desc = getVal(`about-stat-desc-${index}`);
+    if (value) stat.value = value;
+    if (title) stat.title = title;
+    if (desc) stat.description = desc;
   });
 
-  siteData.services.eyebrow = getVal("services-eyebrow");
-  siteData.services.title = getVal("services-title");
-  siteData.services.description = getVal("services-desc");
+  setVal(siteData.services, "eyebrow", getVal("services-eyebrow"));
+  setVal(siteData.services, "title", getVal("services-title"));
+  setVal(siteData.services, "description", getVal("services-desc"));
   siteData.services.items.forEach((item, index) => {
-    item.title = getVal(`service-title-${index}`);
-    item.description = getVal(`service-desc-${index}`);
+    const title = getVal(`service-title-${index}`);
+    const desc = getVal(`service-desc-${index}`);
+    if (title) item.title = title;
+    if (desc) item.description = desc;
   });
 
-  siteData.process.eyebrow = getVal("process-eyebrow");
-  siteData.process.title = getVal("process-title");
+  setVal(siteData.process, "eyebrow", getVal("process-eyebrow"));
+  setVal(siteData.process, "title", getVal("process-title"));
   siteData.process.items.forEach((item, index) => {
-    item.title = getVal(`process-title-${index}`);
-    item.description = getVal(`process-desc-${index}`);
+    const title = getVal(`process-title-${index}`);
+    const desc = getVal(`process-desc-${index}`);
+    if (title) item.title = title;
+    if (desc) item.description = desc;
   });
 
-  siteData.inspiration.eyebrow = getVal("insp-eyebrow");
-  siteData.inspiration.titleLine1 = getVal("insp-title1");
-  siteData.inspiration.titleLine2 = getVal("insp-title2");
-  siteData.inspiration.description = getVal("insp-desc");
-  siteData.inspiration.detailButtonLabel = getVal("insp-btn");
+  setVal(siteData.inspiration, "eyebrow", getVal("insp-eyebrow"));
+  setVal(siteData.inspiration, "titleLine1", getVal("insp-title1"));
+  setVal(siteData.inspiration, "titleLine2", getVal("insp-title2"));
+  setVal(siteData.inspiration, "description", getVal("insp-desc"));
+  setVal(siteData.inspiration, "detailButtonLabel", getVal("insp-btn"));
 
-  siteData.cta.eyebrow = getVal("cta-eyebrow");
-  siteData.cta.titleLine1 = getVal("cta-title1");
-  siteData.cta.titleLine2 = getVal("cta-title2");
-  siteData.cta.description = getVal("cta-desc");
-  siteData.cta.buttonLabel = getVal("cta-btn");
+  setVal(siteData.cta, "eyebrow", getVal("cta-eyebrow"));
+  setVal(siteData.cta, "titleLine1", getVal("cta-title1"));
+  setVal(siteData.cta, "titleLine2", getVal("cta-title2"));
+  setVal(siteData.cta, "description", getVal("cta-desc"));
+  setVal(siteData.cta, "buttonLabel", getVal("cta-btn"));
 
-  siteData.contact.intro = getVal("contact-intro");
-  siteData.contact.placeholder = getVal("contact-placeholder");
-  siteData.contact.buttonLabel = getVal("contact-btn");
-  siteData.contact.feedback = getVal("contact-feedback");
+  setVal(siteData.contact, "intro", getVal("contact-intro"));
+  setVal(siteData.contact, "placeholder", getVal("contact-placeholder"));
+  setVal(siteData.contact, "buttonLabel", getVal("contact-btn"));
+  setVal(siteData.contact, "feedback", getVal("contact-feedback"));
 
-  siteData.footer.brandDescription = getVal("footer-desc");
-  siteData.footer.servicesTitle = getVal("footer-services-title");
-  siteData.footer.contactTitle = getVal("footer-contact-title");
-  siteData.footer.email = getVal("footer-email");
-  siteData.footer.copyright = getVal("footer-copyright");
+  setVal(siteData.footer, "brandDescription", getVal("footer-desc"));
+  setVal(siteData.footer, "servicesTitle", getVal("footer-services-title"));
+  setVal(siteData.footer, "contactTitle", getVal("footer-contact-title"));
+  setVal(siteData.footer, "email", getVal("footer-email"));
+  setVal(siteData.footer, "copyright", getVal("footer-copyright"));
   siteData.footer.servicesLinks.forEach((link, index) => {
-    link.label = getVal(`footer-service-label-${index}`);
-    link.href = getVal(`footer-service-href-${index}`);
+    const label = getVal(`footer-service-label-${index}`);
+    const href = getVal(`footer-service-href-${index}`);
+    if (label) link.label = label;
+    if (href) link.href = href;
   });
   siteData.footer.contactLinks.forEach((link, index) => {
-    link.label = getVal(`footer-contact-label-${index}`);
-    link.href = getVal(`footer-contact-href-${index}`);
+    const label = getVal(`footer-contact-label-${index}`);
+    const href = getVal(`footer-contact-href-${index}`);
+    if (label) link.label = label;
+    if (href) link.href = href;
   });
 
-  siteData.leadModal.title = getVal("lead-modal-title");
-  siteData.leadModal.description = getVal("lead-modal-desc");
-  siteData.leadModal.inputPlaceholder = getVal("lead-modal-placeholder");
-  siteData.leadModal.submitLabel = getVal("lead-modal-submit");
+  setVal(siteData.leadModal, "title", getVal("lead-modal-title"));
+  setVal(siteData.leadModal, "description", getVal("lead-modal-desc"));
+  setVal(siteData.leadModal, "inputPlaceholder", getVal("lead-modal-placeholder"));
+  setVal(siteData.leadModal, "submitLabel", getVal("lead-modal-submit"));
 }
 
 async function initSupabaseData() {
