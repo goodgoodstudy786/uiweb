@@ -146,7 +146,7 @@ function normalizeInspirationItems(items: unknown): InspirationItem[] {
   });
 }
 
-function normalizeHref(href: string | undefined, fallback = "./") {
+export function normalizeHref(href: string | undefined, fallback = "./") {
   if (!href) {
     return fallback;
   }

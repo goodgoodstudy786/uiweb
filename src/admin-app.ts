@@ -188,16 +188,29 @@ async function loadSiteData() {
 async function saveToSupabase() {
   if (!siteData) return;
   
+  // 先保存到 localStorage 作为回退
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(siteData));
+    console.log("已保存到 localStorage");
+  } catch (e) {
+    console.error("localStorage 保存失败:", e);
+  }
+  
+  // 再尝试保存到 Supabase
   try {
     const { error } = await supabase
       .from("homepage")
       .upsert({ slug: "main", content: siteData, is_active: true }, { onConflict: "slug" });
     
-    if (error) throw error;
+    if (error) {
+      console.error("Supabase 保存错误:", error.message, error.details);
+      showToast("已保存到本地，云端同步失败: " + error.message, "error");
+      return;
+    }
     showToast("保存成功，已同步到云端", "success");
   } catch (error) {
     console.error("Save to Supabase failed:", error);
-    showToast("保存失败", "error");
+    showToast("已保存到本地，云端同步失败", "error");
   }
 }
 
