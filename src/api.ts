@@ -359,36 +359,48 @@ async function loadSupabaseSiteData(): Promise<HomeSiteData> {
     return loadFallbackSiteData();
   }
 
-  const [homepageResponse, projectsResponse, socialResponse] = await Promise.all([
-    client.from("homepage").select("slug, content, is_active").eq("slug", "main").maybeSingle<SupabaseHomepageRow>(),
-    client
-      .from("projects")
-      .select(
-        "slug, title, category, summary, layout_variant, cover_image_path, cover_image_url, cover_image_alt, detail_image_path, detail_image_url, detail_image_alt, detail_paragraphs, sort_order, published",
-      )
-      .eq("published", true)
-      .order("sort_order", { ascending: true }),
-    client
-      .from("social_links")
-      .select("label, url, platform, icon, sort_order, is_active")
-      .eq("is_active", true)
-      .order("sort_order", { ascending: true }),
-  ]);
+  try {
+    const [homepageResponse, projectsResponse, socialResponse] = await Promise.all([
+      client.from("homepage").select("slug, content, is_active").eq("slug", "main").maybeSingle<SupabaseHomepageRow>(),
+      client
+        .from("projects")
+        .select(
+          "slug, title, category, summary, layout_variant, cover_image_path, cover_image_url, cover_image_alt, detail_image_path, detail_image_url, detail_image_alt, detail_paragraphs, sort_order, published",
+        )
+        .eq("published", true)
+        .order("sort_order", { ascending: true }),
+      client
+        .from("social_links")
+        .select("label, url, platform, icon, sort_order, is_active")
+        .eq("is_active", true)
+        .order("sort_order", { ascending: true }),
+    ]);
 
-  const homepageContent = normalizeHomepageContent(homepageResponse.data?.content ?? null);
-  const fallback = loadFallbackSiteDataSync();
+    // 如果 Supabase 有数据，使用 Supabase 数据
+    if (homepageResponse.data?.content) {
+      const homepageContent = normalizeHomepageContent(homepageResponse.data.content);
+      const fallback = loadFallbackSiteDataSync();
 
-  return {
-    homepage: mergeDeep(fallback.homepage, homepageContent),
-    projects:
-      projectsResponse.data?.length
-        ? (projectsResponse.data as SupabaseProjectRow[]).map(normalizeProjectRow)
-        : fallback.projects,
-    socialLinks:
-      socialResponse.data?.length
-        ? (socialResponse.data as SupabaseSocialLinkRow[]).map(normalizeSocialLinkRow)
-        : fallback.socialLinks,
-  };
+      return {
+        homepage: mergeDeep(fallback.homepage, homepageContent),
+        projects:
+          projectsResponse.data?.length
+            ? (projectsResponse.data as SupabaseProjectRow[]).map(normalizeProjectRow)
+            : fallback.projects,
+        socialLinks:
+          socialResponse.data?.length
+            ? (socialResponse.data as SupabaseSocialLinkRow[]).map(normalizeSocialLinkRow)
+            : fallback.socialLinks,
+      };
+    }
+
+    // Supabase 没有数据，使用 localStorage 或 fixture
+    console.log("Supabase 无数据，使用本地数据");
+    return loadFallbackSiteDataSync();
+  } catch (error) {
+    console.warn("Supabase 请求失败，使用本地数据:", error);
+    return loadFallbackSiteDataSync();
+  }
 }
 
 function loadFallbackSiteDataSync(): HomeSiteData {
