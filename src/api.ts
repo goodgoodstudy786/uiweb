@@ -442,16 +442,16 @@ export async function getSiteData(): Promise<HomeSiteData> {
   if (stored) {
     try {
       const parsed = JSON.parse(stored);
-      // 验证数据有效性
-      if (parsed && parsed.brand && parsed.hero && parsed.brand.line1) {
-        console.log("从 localStorage 加载后台修改的数据");
+      // 验证数据有效性 - 只要包含 brand 和 hero 就认为是有效数据
+      if (parsed && typeof parsed === "object" && parsed.brand && parsed.hero) {
+        console.log("从 localStorage 加载后台修改的数据", parsed);
         return {
           homepage: normalizeHomepageContent(parsed),
           projects: buildFallbackProjects(),
           socialLinks: buildFallbackSocialLinks(),
         };
       } else {
-        console.warn("localStorage 数据无效，清除并使用默认数据");
+        console.warn("localStorage 数据无效，清除并使用默认数据", parsed);
         localStorage.removeItem("site_data");
       }
     } catch (e) {
