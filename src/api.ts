@@ -81,7 +81,10 @@ function mergeDeep<T>(base: T, override: unknown): T {
       continue;
     }
 
-    output[key] = value ?? current;
+    // 只有当 value 不是 null/undefined/空字符串时才覆盖
+    if (value !== null && value !== undefined && value !== "") {
+      output[key] = value;
+    }
   }
 
   return output as T;
