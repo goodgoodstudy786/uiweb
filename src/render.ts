@@ -21,7 +21,7 @@ function chunk<T>(items: T[], size: number) {
   return groups;
 }
 
-function renderLogo(brand: HomepageContent["brand"], href = "/") {
+function renderLogo(brand: HomepageContent["brand"], href = "./") {
   return `
     <a class="brand" href="${href}" aria-label="返回首页">
       <span class="logo-mark">
@@ -267,7 +267,7 @@ function renderProjectCover(project: ProjectRow) {
 
 function renderProjectFeatureCard(project: ProjectRow) {
   return `
-    <a class="work-link reveal" href="/case.html?case=${encodeURIComponent(project.slug)}" aria-label="打开${escapeAttr(project.title)}">
+    <a class="work-link reveal" href="case.html?case=${encodeURIComponent(project.slug)}" aria-label="打开${escapeAttr(project.title)}">
       <figure class="work-media">
         ${renderProjectArtwork(project)}
         <figcaption>${escapeHtml(project.title)}</figcaption>
@@ -279,7 +279,7 @@ function renderProjectFeatureCard(project: ProjectRow) {
 
 function renderProjectCompactCard(project: ProjectRow) {
   return `
-    <a class="work-card reveal" href="/case.html?case=${encodeURIComponent(project.slug)}" aria-label="打开${escapeAttr(project.title)}">
+    <a class="work-card reveal" href="case.html?case=${encodeURIComponent(project.slug)}" aria-label="打开${escapeAttr(project.title)}">
       ${renderProjectArtwork(project)}
       <div class="work-caption">
         <h3>${escapeHtml(project.title)}</h3>
@@ -343,7 +343,7 @@ function renderWorksPage(site: HomeSiteData) {
             <p class="tiny-label">${escapeHtml(site.homepage.worksSection.badge)}</p>
             <h1 id="works-page-title">${escapeHtml(site.homepage.worksSection.title)}</h1>
           </div>
-          <a class="text-link" href="/#top">返回首页</a>
+          <a class="text-link" href="./">返回首页</a>
         </div>
       </section>
 
@@ -404,7 +404,7 @@ function renderBlocks(items: HomepageContent["services"]["items"] | HomepageCont
 }
 
 function getInspirationHref(item: InspirationItem) {
-  return `/inspiration.html?slug=${encodeURIComponent(item.slug)}`;
+  return `inspiration.html?slug=${encodeURIComponent(item.slug)}`;
 }
 
 function getAdjacentInspirationItems(items: InspirationItem[], slug: string) {
@@ -455,7 +455,7 @@ function renderInspirationSection(site: HomeSiteData) {
         <p class="tiny-label">${escapeHtml(site.homepage.inspiration.eyebrow)}</p>
         <h2 id="inspiration-title">${escapeHtml(site.homepage.inspiration.titleLine1)}<br />${escapeHtml(site.homepage.inspiration.titleLine2)}</h2>
         <p>${escapeHtml(site.homepage.inspiration.description)}</p>
-        <a class="text-link" href="${escapeAttr(site.homepage.inspiration.pageHref || "/inspiration.html")}">查看灵感库</a>
+        <a class="text-link" href="${escapeAttr(site.homepage.inspiration.pageHref || "inspiration.html")}">查看灵感库</a>
       </div>
       <div>
         ${renderInspirationList(items, true)}
@@ -480,7 +480,7 @@ function renderHomePage(site: HomeSiteData) {
           </div>
           <div class="hero-copy">
             <p>${escapeHtml(hero.copy)}</p>
-            <a class="text-link" href="${escapeAttr(hero.ctaHref || "/#works")}">${escapeHtml(hero.ctaLabel)}</a>
+            <a class="text-link" href="${escapeAttr(hero.ctaHref || "#works")}">${escapeHtml(hero.ctaLabel)}</a>
           </div>
         </div>
       </section>
@@ -552,7 +552,7 @@ function renderHomePage(site: HomeSiteData) {
 
 function renderProjectCard(project: ProjectRow) {
   return `
-    <a class="case-card reveal" href="/case.html?case=${encodeURIComponent(project.slug)}" aria-label="打开${escapeAttr(project.title)}">
+    <a class="case-card reveal" href="case.html?case=${encodeURIComponent(project.slug)}" aria-label="打开${escapeAttr(project.title)}">
       <figure class="case-card-cover">
         ${renderProjectCover(project)}
       </figure>
@@ -573,7 +573,7 @@ function renderCasePage(site: HomeSiteData, project: ProjectRow) {
         <p class="tiny-label">案例类型 · ${escapeHtml(project.category)}</p>
         <div class="case-hero-head">
           <h1 id="case-title">${escapeHtml(project.title)}</h1>
-          <a class="text-link" href="/#works">返回作品</a>
+          <a class="text-link" href="works.html">返回作品</a>
         </div>
       </section>
 
@@ -698,7 +698,7 @@ function renderFooter(site: HomeSiteData, socialLinks: SocialLinkRow[]) {
       </div>
       <div class="footer-main">
         <div>
-          ${renderLogo(site.homepage.brand, "/")}
+          ${renderLogo(site.homepage.brand, "./")}
           <p>${escapeHtml(site.homepage.footer.brandDescription)}</p>
         </div>
         <div>

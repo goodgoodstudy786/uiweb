@@ -146,7 +146,7 @@ function normalizeInspirationItems(items: unknown): InspirationItem[] {
   });
 }
 
-function normalizeHref(href: string | undefined, fallback = "/") {
+function normalizeHref(href: string | undefined, fallback = "./") {
   if (!href) {
     return fallback;
   }
@@ -164,10 +164,7 @@ function normalizeHref(href: string | undefined, fallback = "/") {
   }
 
   if (href.startsWith("#")) {
-    if (href === "#top") {
-      return "/";
-    }
-
+    // 锚点链接保持不变
     return href;
   }
 
