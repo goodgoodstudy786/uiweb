@@ -14,3 +14,4 @@ works-*.png
 top-*.png
 *.log
 .DS_Store
+.env.local

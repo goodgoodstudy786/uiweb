@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 
 export default defineConfig({
+  base: process.env.NODE_ENV === "production" ? "/uiweb/" : "/",
   server: {
     host: "0.0.0.0",
     port: 8787,
@@ -17,6 +18,8 @@ export default defineConfig({
         home: "index.html",
         case: "case.html",
         inspiration: "inspiration.html",
+        works: "works.html",
+        admin: "hidden.html",
       },
     },
   },

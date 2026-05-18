@@ -390,6 +390,21 @@ async function loadSupabaseSiteData(): Promise<HomeSiteData> {
 }
 
 function loadFallbackSiteDataSync(): HomeSiteData {
+  const stored = localStorage.getItem("site_data");
+  if (stored) {
+    try {
+      const parsed = JSON.parse(stored);
+      // 后台保存的数据是扁平的 HomepageContent 格式
+      // 前端需要 HomeSiteData 格式，所以将扁平数据作为 homepage
+      return {
+        homepage: normalizeHomepageContent(parsed),
+        projects: buildFallbackProjects(),
+        socialLinks: buildFallbackSocialLinks(),
+      };
+    } catch (e) {
+      console.error("Failed to parse stored site data:", e);
+    }
+  }
   return {
     homepage: normalizeHomepageContent(clone(fallbackFixture)),
     projects: buildFallbackProjects(),

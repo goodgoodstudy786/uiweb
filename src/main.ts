@@ -4,18 +4,22 @@ import type { HomeSiteData } from "./types";
 import "../styles.css";
 
 const root = document.getElementById("app");
-const pageHint = (document.body.dataset.page || "home") as "home" | "case" | "inspiration" | string;
+const pageHint = (document.body.dataset.page || "home") as "home" | "case" | "inspiration" | "works" | string;
 
 let siteData: HomeSiteData | null = null;
 let hoveredInteractive: Element | null = null;
 
-function detectPage(): "home" | "case" | "inspiration" {
+function detectPage(): "home" | "case" | "inspiration" | "works" {
   if (pageHint === "case") {
     return "case";
   }
 
   if (pageHint === "inspiration") {
     return "inspiration";
+  }
+
+  if (pageHint === "works") {
+    return "works";
   }
 
   const { pathname } = window.location;
@@ -25,6 +29,10 @@ function detectPage(): "home" | "case" | "inspiration" {
 
   if (pathname.includes("inspiration.html")) {
     return "inspiration";
+  }
+
+  if (pathname.includes("works.html")) {
+    return "works";
   }
 
   return "home";
@@ -122,6 +130,9 @@ function setupRevealTargets() {
     ".inspiration-detail-nav",
     ".inspiration-detail-nav-link",
     ".inspiration-item",
+    ".works-page-hero",
+    ".works-page-list",
+    ".works-page-cta",
     ".final-cta",
     ".footer-top",
     ".footer-main > div",

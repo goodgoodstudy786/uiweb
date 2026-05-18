@@ -16,6 +16,7 @@
     "@supabase/supabase-js": "^2.49.1"
   },
   "devDependencies": {
+    "netlify-cli": "^26.0.2",
     "typescript": "^5.8.3",
     "vite": "^5.4.0"
   }

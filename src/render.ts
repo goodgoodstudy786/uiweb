@@ -40,6 +40,12 @@ function renderMenu(site: HomeSiteData) {
         ${site.homepage.navigation
           .map((link) => `<a href="${escapeAttr(link.href)}">${escapeHtml(link.label)}</a>`)
           .join("")}
+        <div class="menu-panel-contact">
+          <svg class="menu-panel-contact-icon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+            <path d="M8.5 13.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm7 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2ZM12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2Zm0 18c-4.418 0-8-3.582-8-8s3.582-8 8-8 8 3.582 8 8-3.582 8-8 8Z"/>
+          </svg>
+          <span class="menu-panel-contact-text">微信号：Warm_light786</span>
+        </div>
       </div>
     </nav>
   `;
@@ -323,6 +329,45 @@ function renderWorksSection(site: HomeSiteData) {
         预约项目沟通
       </button>
     </section>
+  `;
+}
+
+function renderWorksPage(site: HomeSiteData) {
+  const projects = site.projects.filter((project) => project.published);
+
+  return `
+    <main id="top">
+      <section class="section works-page-hero reveal" aria-labelledby="works-page-title">
+        <div class="works-page-hero-head">
+          <div>
+            <p class="tiny-label">${escapeHtml(site.homepage.worksSection.badge)}</p>
+            <h1 id="works-page-title">${escapeHtml(site.homepage.worksSection.title)}</h1>
+          </div>
+          <a class="text-link" href="/#top">返回首页</a>
+        </div>
+      </section>
+
+      <section class="section works-page-list reveal" aria-labelledby="works-page-list-title">
+        ${
+          projects.length
+            ? `
+              <div class="works-page-grid">
+                ${projects.map((project) => renderProjectCompactCard(project)).join("")}
+              </div>
+            `
+            : `<p class="inspiration-empty">暂无作品，请先在 Supabase 的 projects 表中添加内容。</p>`
+        }
+      </section>
+
+      <section class="section works-page-cta reveal" aria-labelledby="works-page-cta-title">
+        <div class="section-head">
+          <h2 id="works-page-cta-title">有项目想法？</h2>
+        </div>
+        <button class="center-link text-link js-start-project" type="button" aria-haspopup="dialog" aria-controls="lead-modal">
+          预约项目沟通
+        </button>
+      </section>
+    </main>
   `;
 }
 
@@ -719,7 +764,7 @@ function renderLeadModal(site: HomeSiteData) {
   `;
 }
 
-export function renderPage(site: HomeSiteData, page: "home" | "case" | "inspiration", slug?: string) {
+export function renderPage(site: HomeSiteData, page: "home" | "case" | "inspiration" | "works", slug?: string) {
   const project = slug ? site.projects.find((item) => item.slug === slug) : undefined;
   const inspirationItem = page === "inspiration" && slug ? site.homepage.inspiration.items.find((item) => item.slug === slug) : undefined;
   const currentProject = project || site.projects[0];
@@ -730,7 +775,9 @@ export function renderPage(site: HomeSiteData, page: "home" | "case" | "inspirat
         ? inspirationItem
           ? "inspiration-page inspiration-detail-page"
           : "inspiration-page"
-        : "home-page";
+        : page === "works"
+          ? "works-page"
+          : "home-page";
 
   const content =
     page === "case"
@@ -741,7 +788,9 @@ export function renderPage(site: HomeSiteData, page: "home" | "case" | "inspirat
         ? inspirationItem
           ? renderInspirationDetailPage(site, inspirationItem)
           : renderInspirationPage(site)
-        : renderHomePage(site);
+        : page === "works"
+          ? renderWorksPage(site)
+          : renderHomePage(site);
 
   return `
     <div class="app-shell ${bodyClass}">
