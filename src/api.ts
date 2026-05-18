@@ -378,9 +378,10 @@ async function loadSupabaseSiteData(): Promise<HomeSiteData> {
         .order("sort_order", { ascending: true }),
     ]);
 
-    // 如果 Supabase 有数据，使用 Supabase 数据
-    if (homepageResponse.data?.content) {
-      const homepageContent = normalizeHomepageContent(homepageResponse.data.content);
+    // 验证 Supabase 返回的数据是否有效
+    const content = homepageResponse.data?.content;
+    if (content && typeof content === "object" && content.brand && content.hero) {
+      const homepageContent = normalizeHomepageContent(content);
       const fallback = loadFallbackSiteDataSync();
 
       return {
@@ -396,8 +397,8 @@ async function loadSupabaseSiteData(): Promise<HomeSiteData> {
       };
     }
 
-    // Supabase 没有数据，使用 localStorage 或 fixture
-    console.log("Supabase 无数据，使用本地数据");
+    // Supabase 数据无效或没有数据，使用本地数据
+    console.log("Supabase 数据无效，使用本地数据");
     return loadFallbackSiteDataSync();
   } catch (error) {
     console.warn("Supabase 请求失败，使用本地数据:", error);
