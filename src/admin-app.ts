@@ -91,7 +91,7 @@ let siteData: SiteData | null = null;
 let currentSection = "dashboard";
 
 const STORAGE_KEY = "site_data";
-const DATA_URL = "/data/site.json";
+const DATA_URL = "data/site.json";
 const AUTH_KEY = "admin_auth";
 const ADMIN_PASSWORD = "admin123";
 
