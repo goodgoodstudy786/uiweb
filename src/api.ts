@@ -485,24 +485,37 @@ function storeLeadDraft(input: LeadSubmissionInput) {
 }
 
 export async function submitLead(input: LeadSubmissionInput) {
+  // 先保存到 localStorage（确保数据不丢失）
+  try {
+    const existing = JSON.parse(localStorage.getItem("uiweb:lead-submissions") || "[]") as LeadSubmissionInput[];
+    const next = [...existing, input].slice(-50);
+    localStorage.setItem("uiweb:lead-submissions", JSON.stringify(next));
+    console.log("客户信息已保存到本地");
+  } catch (error) {
+    console.warn("本地保存失败:", error);
+  }
+
+  // 尝试同步到 Supabase
   const client = getSupabaseClient();
+  if (client) {
+    try {
+      const { error } = await client.from("lead_submissions").insert({
+        phone: input.phone,
+        source: input.source,
+        page_url: input.pageUrl,
+      });
 
-  if (!client) {
-    storeLeadDraft(input);
-    return { mode: "local" as const };
+      if (error) {
+        console.warn("Supabase 同步失败:", error.message);
+      } else {
+        console.log("已同步到 Supabase");
+      }
+    } catch (error) {
+      console.warn("Supabase 同步异常:", error);
+    }
   }
 
-  const { error } = await client.from("lead_submissions").insert({
-    phone: input.phone,
-    source: input.source,
-    page_url: input.pageUrl,
-  });
-
-  if (error) {
-    throw error;
-  }
-
-  return { mode: "supabase" as const };
+  return { mode: "local" as const };
 }
 
 export function getProjectPathForImage(project: ProjectRow) {

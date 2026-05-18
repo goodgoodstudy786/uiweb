@@ -325,6 +325,13 @@ function renderSidebar() {
           </button>
         </div>
         <div class="admin-nav-group">
+          <div class="admin-nav-group-title">客户线索</div>
+          <button class="admin-nav-item ${currentSection === "leads" ? "active" : ""}" data-section="leads">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            客户信息
+          </button>
+        </div>
+        <div class="admin-nav-group">
           <div class="admin-nav-group-title">首页内容</div>
           <button class="admin-nav-item ${currentSection === "hero" ? "active" : ""}" data-section="hero">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
@@ -362,6 +369,7 @@ function renderHeader() {
     navigation: "导航管理",
     works: "作品管理",
     inspiration: "灵感库管理",
+    leads: "客户信息",
     hero: "首屏区域",
     about: "关于我",
     services: "服务与流程",
@@ -375,10 +383,12 @@ function renderHeader() {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
           查看网站
         </button>
+        ${currentSection !== "leads" ? `
         <button class="admin-btn admin-btn-primary" id="btn-save-data">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
           保存更改
         </button>
+        ` : ""}
       </div>
     </header>
   `;
@@ -927,6 +937,54 @@ function renderContact() {
   `;
 }
 
+function renderLeads() {
+  // 从 localStorage 获取客户提交信息
+  let leads: Array<{ phone: string; source: string; pageUrl: string; submittedAt: string }> = [];
+  try {
+    const stored = localStorage.getItem("uiweb:lead-submissions");
+    if (stored) {
+      leads = JSON.parse(stored);
+    }
+  } catch (e) {
+    console.warn("读取客户信息失败:", e);
+  }
+
+  const leadsList = leads.length > 0 
+    ? leads.map((lead, index) => `
+      <div class="admin-list-item">
+        <div class="admin-list-item-content">
+          <div class="admin-list-item-title">${escapeHtml(lead.phone)}</div>
+          <div class="admin-list-item-desc">来源：${escapeHtml(lead.source)} | ${new Date(lead.submittedAt).toLocaleString("zh-CN")}</div>
+        </div>
+        <div class="admin-list-item-actions">
+          <button class="admin-btn admin-btn-danger admin-btn-sm" data-delete-lead="${index}">删除</button>
+        </div>
+      </div>
+    `).join("")
+    : `<div class="admin-empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+        <p>暂无客户信息</p>
+        <p class="admin-empty-state-desc">当访客在前台提交联系方式后，会显示在这里</p>
+      </div>`;
+
+  return `
+    <div class="admin-content">
+      <div class="admin-card">
+        <div class="admin-card-title">
+          客户提交信息
+          <span class="admin-card-badge">${leads.length}</span>
+        </div>
+        <div id="leads-list">${leadsList}</div>
+      </div>
+    </div>
+  `;
+}
+
 function renderContent() {
   switch (currentSection) {
     case "dashboard": return renderDashboard();
@@ -934,6 +992,7 @@ function renderContent() {
     case "navigation": return renderNavigation();
     case "works": return renderWorks();
     case "inspiration": return renderInspiration();
+    case "leads": return renderLeads();
     case "hero": return renderHero();
     case "about": return renderAbout();
     case "services": return renderServices();
@@ -1056,6 +1115,26 @@ function bindInspirationEvents() {
         siteData.inspiration.items.splice(index, 1);
         saveToSupabase();
         render();
+      }
+    });
+  });
+
+  // 删除客户信息
+  document.querySelectorAll("[data-delete-lead]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const index = parseInt((btn as HTMLElement).dataset.deleteLead!);
+      if (confirm("确定要删除这条客户信息吗？")) {
+        try {
+          const stored = localStorage.getItem("uiweb:lead-submissions");
+          if (stored) {
+            const leads = JSON.parse(stored);
+            leads.splice(index, 1);
+            localStorage.setItem("uiweb:lead-submissions", JSON.stringify(leads));
+            render();
+          }
+        } catch (e) {
+          console.warn("删除客户信息失败:", e);
+        }
       }
     });
   });

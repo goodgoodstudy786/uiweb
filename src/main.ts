@@ -66,7 +66,6 @@ function setMenu(open: boolean) {
 function setLeadModalOpen(open: boolean) {
   const leadModal = document.querySelector(".lead-modal");
   const leadInput = document.querySelector<HTMLInputElement>("#lead-phone");
-  const startButton = document.querySelector<HTMLButtonElement>(".js-start-project");
 
   if (!(leadModal instanceof HTMLElement)) {
     return;
@@ -82,8 +81,6 @@ function setLeadModalOpen(open: boolean) {
     }, 0);
     return;
   }
-
-  startButton?.focus();
 }
 
 function showLeadStatus(message: string, type: "info" | "success" | "error" = "info") {
@@ -264,7 +261,8 @@ function setupLeadModal() {
   const leadInput = document.querySelector<HTMLInputElement>("#lead-phone");
 
   openButtons.forEach((button) => {
-    button.addEventListener("click", () => {
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
       showLeadStatus("", "info");
       setLeadModalOpen(true);
     });
@@ -312,13 +310,13 @@ function setupLeadModal() {
 
         leadForm.reset();
         showLeadStatus(
-          result.mode === "supabase" ? "已提交，我会尽快联系你。" : "已暂存到本地预览，配置 Supabase 后即可正式入库。",
+          "已提交，我会尽快联系你。",
           "success",
         );
 
         window.setTimeout(() => {
           setLeadModalOpen(false);
-        }, 900);
+        }, 1500);
       } catch (error) {
         showLeadStatus("提交失败，请稍后重试。", "error");
       } finally {

@@ -443,6 +443,38 @@ body {
   gap: 8px;
 }
 
+.admin-empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--admin-text-secondary);
+}
+
+.admin-empty-state svg {
+  margin-bottom: 16px;
+  opacity: 0.3;
+}
+
+.admin-empty-state p {
+  margin: 8px 0;
+  font-size: 15px;
+}
+
+.admin-empty-state-desc {
+  font-size: 13px !important;
+  opacity: 0.7;
+}
+
+.admin-card-badge {
+  display: inline-block;
+  background: var(--admin-primary);
+  color: white;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-left: 8px;
+  font-weight: 500;
+}
+
 .admin-modal-overlay {
   position: fixed;
   inset: 0;
