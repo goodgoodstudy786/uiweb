@@ -59,7 +59,8 @@ function clone<T>(value: T): T {
 function mergeDeep<T>(base: T, override: unknown): T {
   if (!isPlainObject(base) || !isPlainObject(override)) {
     if (Array.isArray(override)) {
-      return override as T;
+      // 只有当 override 数组非空时才替换，否则保留 base
+      return (override.length > 0 ? override : base) as T;
     }
     return (override ?? base) as T;
   }
@@ -70,7 +71,8 @@ function mergeDeep<T>(base: T, override: unknown): T {
     const current = output[key];
 
     if (Array.isArray(value)) {
-      output[key] = value;
+      // 只有当 override 数组非空时才替换
+      output[key] = value.length > 0 ? value : current;
       continue;
     }
 
