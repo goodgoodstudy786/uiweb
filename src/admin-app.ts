@@ -1305,8 +1305,12 @@ function showWorkModal(index: number) {
           <input type="text" class="admin-form-input" id="modal-work-meta" value="${escapeHtml(item.meta)}">
         </div>
         <div class="admin-form-group">
-          <label class="admin-form-label">封面图片 URL</label>
-          <input type="text" class="admin-form-input" id="modal-work-cover" value="${escapeHtml(coverUrl)}" placeholder="https://example.com/image.jpg">
+          <label class="admin-form-label">封面图片</label>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input type="file" id="modal-work-cover-file" accept="image/*" style="flex:1;">
+            <button type="button" class="admin-btn admin-btn-secondary admin-btn-sm" id="btn-upload-cover">上传</button>
+          </div>
+          <input type="text" class="admin-form-input" id="modal-work-cover" value="${escapeHtml(coverUrl)}" placeholder="或输入图片URL" style="margin-top:8px;">
         </div>
         <div class="admin-form-group">
           <label class="admin-form-label">封面图片描述 (alt)</label>
@@ -1325,6 +1329,48 @@ function showWorkModal(index: number) {
   `;
 
   document.body.appendChild(modal);
+
+  // 图片上传功能
+  const btnUploadCover = modal.querySelector("#btn-upload-cover") as HTMLButtonElement;
+  const fileInput = modal.querySelector("#modal-work-cover-file") as HTMLInputElement;
+  const coverInput = modal.querySelector("#modal-work-cover") as HTMLInputElement;
+  
+  if (btnUploadCover && fileInput && coverInput) {
+    btnUploadCover.addEventListener("click", async () => {
+      const file = fileInput.files?.[0];
+      if (!file) {
+        showToast("请先选择图片文件", "error");
+        return;
+      }
+      
+      btnUploadCover.textContent = "上传中...";
+      btnUploadCover.disabled = true;
+      
+      try {
+        const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const fileName = `works/${Date.now()}_${file.name}`;
+        
+        const { error: uploadError } = await client.storage
+          .from("site-assets")
+          .upload(fileName, file);
+        
+        if (uploadError) throw uploadError;
+        
+        const { data } = client.storage
+          .from("site-assets")
+          .getPublicUrl(fileName);
+        
+        coverInput.value = data.publicUrl;
+        showToast("图片上传成功！", "success");
+      } catch (e: any) {
+        console.error("图片上传失败:", e);
+        showToast("图片上传失败: " + (e.message || "未知错误"), "error");
+      } finally {
+        btnUploadCover.textContent = "上传";
+        btnUploadCover.disabled = false;
+      }
+    });
+  }
 
   modal.querySelector(".admin-modal-close")!.addEventListener("click", () => modal.remove());
   modal.querySelector("#modal-work-cancel")!.addEventListener("click", () => modal.remove());
