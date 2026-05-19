@@ -1036,7 +1036,10 @@ async function renderContent() {
     case "navigation": return renderNavigation();
     case "works": return renderWorks();
     case "inspiration": return renderInspiration();
-    case "leads": return renderLeads();
+    case "leads": {
+      const leads = await loadLeadsData();
+      return renderLeads(leads);
+    }
     case "hero": return renderHero();
     case "about": return renderAbout();
     case "services": return renderServices();
@@ -1061,68 +1064,30 @@ async function render() {
   bindEvents();
   
   if (currentSection === "leads") {
-    console.log("当前是客户信息页面，开始加载数据...");
-    loadLeadsData().then(leads => {
-      console.log("loadLeadsData 返回:", leads);
-      const leadsListEl = document.getElementById("leads-list");
-      console.log("leads-list 元素:", leadsListEl);
-      if (leadsListEl) {
-        console.log("更新客户列表，数据条数:", leads.length);
-        leadsListEl.innerHTML = leads.length > 0 
-          ? leads.map((lead) => `
-              <div class="admin-list-item">
-                <div class="admin-list-item-content">
-                  <div class="admin-list-item-title">${escapeHtml(lead.phone)}</div>
-                  <div class="admin-list-item-desc">来源：${escapeHtml(lead.source)} | ${new Date(lead.created_at).toLocaleString("zh-CN")}</div>
-                </div>
-                <div class="admin-list-item-actions">
-                  <button class="admin-btn admin-btn-danger admin-btn-sm" data-delete-lead="${lead.id}">删除</button>
-                </div>
-              </div>
-            `).join("")
-          : `<div class="admin-empty-state">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                <circle cx="9" cy="7" r="4"/>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-              </svg>
-              <p>暂无客户信息</p>
-              <p class="admin-empty-state-desc">当访客在前台提交联系方式后，会显示在这里</p>
-            </div>`;
-        console.log("客户列表已更新");
-        
-        const badge = document.querySelector(".admin-card-badge");
-        if (badge) {
-          badge.textContent = leads.length.toString();
-        }
-        
-        document.querySelectorAll("[data-delete-lead]").forEach(btn => {
-          btn.addEventListener("click", async () => {
-            const leadId = (btn as HTMLElement).dataset.deleteLead!;
-            if (confirm("确定要删除这条客户信息吗？")) {
-              try {
-                const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                const { error } = await client
-                  .from("lead_submissions")
-                  .delete()
-                  .eq("id", leadId);
-                
-                if (error) {
-                  console.warn("删除客户信息失败:", error.message);
-                  showToast("删除失败", "error");
-                } else {
-                  showToast("已删除", "success");
-                  await render();
-                }
-              } catch (e) {
-                console.warn("删除客户信息异常:", e);
-                showToast("删除失败", "error");
-              }
+    document.querySelectorAll("[data-delete-lead]").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const leadId = (btn as HTMLElement).dataset.deleteLead!;
+        if (confirm("确定要删除这条客户信息吗？")) {
+          try {
+            const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            const { error } = await client
+              .from("lead_submissions")
+              .delete()
+              .eq("id", leadId);
+            
+            if (error) {
+              console.warn("删除客户信息失败:", error.message);
+              showToast("删除失败", "error");
+            } else {
+              showToast("已删除", "success");
+              await render();
             }
-          });
-        });
-      }
+          } catch (e) {
+            console.warn("删除客户信息异常:", e);
+            showToast("删除失败", "error");
+          }
+        }
+      });
     });
   }
 }
