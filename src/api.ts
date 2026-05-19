@@ -485,17 +485,7 @@ function storeLeadDraft(input: LeadSubmissionInput) {
 }
 
 export async function submitLead(input: LeadSubmissionInput) {
-  // 先保存到 localStorage（确保数据不丢失）
-  try {
-    const existing = JSON.parse(localStorage.getItem("uiweb:lead-submissions") || "[]") as LeadSubmissionInput[];
-    const next = [...existing, input].slice(-50);
-    localStorage.setItem("uiweb:lead-submissions", JSON.stringify(next));
-    console.log("客户信息已保存到本地");
-  } catch (error) {
-    console.warn("本地保存失败:", error);
-  }
-
-  // 尝试同步到 Supabase
+  // 优先提交到 Supabase（中央数据库，管理员可以查看）
   const client = getSupabaseClient();
   if (client) {
     try {
@@ -506,16 +496,35 @@ export async function submitLead(input: LeadSubmissionInput) {
       });
 
       if (error) {
-        console.warn("Supabase 同步失败:", error.message);
-      } else {
-        console.log("已同步到 Supabase");
+        console.warn("Supabase 提交失败:", error.message);
+        // 如果 Supabase 失败，降级到 localStorage
+        fallbackToLocalStorage(input);
+        return { mode: "local" as const };
       }
+
+      console.log("客户信息已提交到 Supabase");
+      return { mode: "supabase" as const };
     } catch (error) {
-      console.warn("Supabase 同步异常:", error);
+      console.warn("Supabase 提交异常:", error);
+      fallbackToLocalStorage(input);
+      return { mode: "local" as const };
     }
   }
 
+  // 没有配置 Supabase，保存到 localStorage
+  fallbackToLocalStorage(input);
   return { mode: "local" as const };
+}
+
+function fallbackToLocalStorage(input: LeadSubmissionInput) {
+  try {
+    const existing = JSON.parse(localStorage.getItem("uiweb:lead-submissions") || "[]") as LeadSubmissionInput[];
+    const next = [...existing, input].slice(-50);
+    localStorage.setItem("uiweb:lead-submissions", JSON.stringify(next));
+    console.log("客户信息已保存到本地（备用方案）");
+  } catch (error) {
+    console.warn("本地保存也失败:", error);
+  }
 }
 
 export function getProjectPathForImage(project: ProjectRow) {

@@ -960,27 +960,34 @@ function renderContact() {
   `;
 }
 
-function renderLeads() {
-  // 从 localStorage 获取客户提交信息
-  let leads: Array<{ phone: string; source: string; pageUrl: string; submittedAt: string }> = [];
+async function renderLeads() {
+  // 从 Supabase 获取客户提交信息
+  let leads: Array<{ id: string; phone: string; source: string; page_url: string; created_at: string }> = [];
+  
   try {
-    const stored = localStorage.getItem("uiweb:lead-submissions");
-    if (stored) {
-      leads = JSON.parse(stored);
+    const { data, error } = await supabase
+      .from("lead_submissions")
+      .select("*")
+      .order("created_at", { ascending: false });
+    
+    if (error) {
+      console.warn("从 Supabase 读取客户信息失败:", error.message);
+    } else if (data) {
+      leads = data;
     }
   } catch (e) {
-    console.warn("读取客户信息失败:", e);
+    console.warn("读取客户信息异常:", e);
   }
 
   const leadsList = leads.length > 0 
-    ? leads.map((lead, index) => `
+    ? leads.map((lead) => `
       <div class="admin-list-item">
         <div class="admin-list-item-content">
           <div class="admin-list-item-title">${escapeHtml(lead.phone)}</div>
-          <div class="admin-list-item-desc">来源：${escapeHtml(lead.source)} | ${new Date(lead.submittedAt).toLocaleString("zh-CN")}</div>
+          <div class="admin-list-item-desc">来源：${escapeHtml(lead.source)} | ${new Date(lead.created_at).toLocaleString("zh-CN")}</div>
         </div>
         <div class="admin-list-item-actions">
-          <button class="admin-btn admin-btn-danger admin-btn-sm" data-delete-lead="${index}">删除</button>
+          <button class="admin-btn admin-btn-danger admin-btn-sm" data-delete-lead="${lead.id}">删除</button>
         </div>
       </div>
     `).join("")
@@ -1008,14 +1015,14 @@ function renderLeads() {
   `;
 }
 
-function renderContent() {
+async function renderContent() {
   switch (currentSection) {
     case "dashboard": return renderDashboard();
     case "site": return renderSiteSettings();
     case "navigation": return renderNavigation();
     case "works": return renderWorks();
     case "inspiration": return renderInspiration();
-    case "leads": return renderLeads();
+    case "leads": return await renderLeads();
     case "hero": return renderHero();
     case "about": return renderAbout();
     case "services": return renderServices();
@@ -1024,15 +1031,16 @@ function renderContent() {
   }
 }
 
-function render() {
+async function render() {
   const app = document.getElementById("admin-app");
   if (!app) return;
+  const content = await renderContent();
   app.innerHTML = `
     <div class="admin-layout">
       ${renderSidebar()}
       <div class="admin-main">
         ${renderHeader()}
-        ${renderContent()}
+        ${content}
       </div>
     </div>
   `;
@@ -1045,18 +1053,18 @@ function updateAuthTimestamp() {
 
 function bindEvents() {
   document.querySelectorAll(".admin-nav-item[data-section]").forEach(btn => {
-    btn.addEventListener("click", () => {
+    btn.addEventListener("click", async () => {
       currentSection = (btn as HTMLElement).dataset.section!;
       updateAuthTimestamp();
-      render();
+      await render();
     });
   });
 
   document.querySelectorAll("[data-goto]").forEach(btn => {
-    btn.addEventListener("click", () => {
+    btn.addEventListener("click", async () => {
       currentSection = (btn as HTMLElement).dataset.goto!;
       updateAuthTimestamp();
-      render();
+      await render();
     });
   });
 
@@ -1088,12 +1096,12 @@ function bindNavigationEvents() {
   });
 
   document.querySelectorAll("[data-delete-nav]").forEach(btn => {
-    btn.addEventListener("click", () => {
+    btn.addEventListener("click", async () => {
       const index = parseInt((btn as HTMLElement).dataset.deleteNav!);
       if (siteData && confirm("确定要删除这个导航链接吗？")) {
         siteData.navigation.splice(index, 1);
         saveToSupabase();
-        render();
+        await render();
       }
     });
   });
@@ -1113,12 +1121,12 @@ function bindWorksEvents() {
   });
 
   document.querySelectorAll("[data-delete-work]").forEach(btn => {
-    btn.addEventListener("click", () => {
+    btn.addEventListener("click", async () => {
       const index = parseInt((btn as HTMLElement).dataset.deleteWork!);
       if (siteData && confirm("确定要删除这个作品吗？")) {
         siteData.works.splice(index, 1);
         saveToSupabase();
-        render();
+        await render();
       }
     });
   });
@@ -1138,31 +1146,37 @@ function bindInspirationEvents() {
   });
 
   document.querySelectorAll("[data-delete-inspiration]").forEach(btn => {
-    btn.addEventListener("click", () => {
+    btn.addEventListener("click", async () => {
       const index = parseInt((btn as HTMLElement).dataset.deleteInspiration!);
       if (siteData && confirm("确定要删除这个灵感条目吗？")) {
         siteData.inspiration.items.splice(index, 1);
         saveToSupabase();
-        render();
+        await render();
       }
     });
   });
 
   // 删除客户信息
   document.querySelectorAll("[data-delete-lead]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const index = parseInt((btn as HTMLElement).dataset.deleteLead!);
+    btn.addEventListener("click", async () => {
+      const leadId = (btn as HTMLElement).dataset.deleteLead!;
       if (confirm("确定要删除这条客户信息吗？")) {
         try {
-          const stored = localStorage.getItem("uiweb:lead-submissions");
-          if (stored) {
-            const leads = JSON.parse(stored);
-            leads.splice(index, 1);
-            localStorage.setItem("uiweb:lead-submissions", JSON.stringify(leads));
-            render();
+          const { error } = await supabase
+            .from("lead_submissions")
+            .delete()
+            .eq("id", leadId);
+          
+          if (error) {
+            console.warn("删除客户信息失败:", error.message);
+            showToast("删除失败", "error");
+          } else {
+            showToast("已删除", "success");
+            await render();
           }
         } catch (e) {
-          console.warn("删除客户信息失败:", e);
+          console.warn("删除客户信息异常:", e);
+          showToast("删除失败", "error");
         }
       }
     });
@@ -1207,7 +1221,7 @@ function showNavModal(index: number) {
 
   modal.querySelector(".admin-modal-close")!.addEventListener("click", () => modal.remove());
   modal.querySelector("#modal-nav-cancel")!.addEventListener("click", () => modal.remove());
-  modal.querySelector("#modal-nav-save")!.addEventListener("click", () => {
+  modal.querySelector("#modal-nav-save")!.addEventListener("click", async () => {
     const label = (modal.querySelector("#modal-nav-label") as HTMLInputElement).value;
     const href = (modal.querySelector("#modal-nav-href") as HTMLInputElement).value;
     if (siteData) {
@@ -1217,7 +1231,7 @@ function showNavModal(index: number) {
         siteData.navigation.push({ label, href });
       }
       saveToSupabase();
-      render();
+      await render();
     }
     modal.remove();
   });
@@ -1274,7 +1288,7 @@ function showWorkModal(index: number) {
 
   modal.querySelector(".admin-modal-close")!.addEventListener("click", () => modal.remove());
   modal.querySelector("#modal-work-cancel")!.addEventListener("click", () => modal.remove());
-  modal.querySelector("#modal-work-save")!.addEventListener("click", () => {
+  modal.querySelector("#modal-work-save")!.addEventListener("click", async () => {
     const id = (modal.querySelector("#modal-work-id") as HTMLInputElement).value;
     const slug = (modal.querySelector("#modal-work-slug") as HTMLInputElement).value;
     const title = (modal.querySelector("#modal-work-title") as HTMLInputElement).value;
@@ -1288,7 +1302,7 @@ function showWorkModal(index: number) {
         siteData.works.push(workData);
       }
       saveToSupabase();
-      render();
+      await render();
     }
     modal.remove();
   });
@@ -1351,7 +1365,7 @@ function showInspirationModal(index: number) {
 
   modal.querySelector(".admin-modal-close")!.addEventListener("click", () => modal.remove());
   modal.querySelector("#modal-insp-cancel")!.addEventListener("click", () => modal.remove());
-  modal.querySelector("#modal-insp-save")!.addEventListener("click", () => {
+  modal.querySelector("#modal-insp-save")!.addEventListener("click", async () => {
     const slug = (modal.querySelector("#modal-insp-slug") as HTMLInputElement).value;
     const title = (modal.querySelector("#modal-insp-title") as HTMLInputElement).value;
     const description = (modal.querySelector("#modal-insp-desc") as HTMLTextAreaElement).value;
@@ -1366,7 +1380,7 @@ function showInspirationModal(index: number) {
         siteData.inspiration.items.push(inspItem);
       }
       saveToSupabase();
-      render();
+      await render();
     }
     modal.remove();
   });
@@ -1526,7 +1540,7 @@ async function init() {
   if (!checkAuth()) return;
   await initSupabaseData();
   await loadSiteData();
-  render();
+  await render();
 }
 
 init();
