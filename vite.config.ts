@@ -19,7 +19,7 @@ export default defineConfig({
         case: "case.html",
         inspiration: "inspiration.html",
         works: "works.html",
-        admin: "hidden.html",
+        config: "config.html",
       },
     },
   },

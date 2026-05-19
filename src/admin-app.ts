@@ -94,7 +94,7 @@ const STORAGE_KEY = "site_data";
 const DATA_URL = "data/site.json";
 const AUTH_KEY = "admin_auth";
 const AUTH_TIMESTAMP_KEY = "admin_auth_timestamp";
-const ADMIN_PASSWORD = "admin123";
+const ADMIN_PASSWORD = "jiutian1995";
 const AUTH_TIMEOUT = 30 * 60 * 1000; // 30分钟
 
 function checkAuth() {
