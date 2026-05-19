@@ -129,9 +129,10 @@ input {
 }
 
 .brand-line2 {
-  font-size: 15px;
-  font-weight: 400;
-  opacity: 0.85;
+  font-size: 13px;
+  font-weight: 300;
+  opacity: 0.75;
+  letter-spacing: 0.3px;
 }
 
 .logo-mark {
