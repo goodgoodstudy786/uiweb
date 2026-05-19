@@ -1132,7 +1132,8 @@ function bindEvents() {
   const btnViewSite = document.getElementById("btn-view-site");
   if (btnViewSite) {
     btnViewSite.addEventListener("click", () => {
-      window.open("/", "_blank");
+      const baseUrl = window.location.pathname.includes("/uiweb/") ? "/uiweb/" : "/";
+      window.open(baseUrl, "_blank");
     });
   }
 
