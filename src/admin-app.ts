@@ -93,14 +93,33 @@ let currentSection = "dashboard";
 const STORAGE_KEY = "site_data";
 const DATA_URL = "data/site.json";
 const AUTH_KEY = "admin_auth";
+const AUTH_TIMESTAMP_KEY = "admin_auth_timestamp";
 const ADMIN_PASSWORD = "admin123";
+const AUTH_TIMEOUT = 30 * 60 * 1000; // 30分钟
 
 function checkAuth() {
   const isAuth = localStorage.getItem(AUTH_KEY);
-  if (!isAuth) {
+  const authTimestamp = localStorage.getItem(AUTH_TIMESTAMP_KEY);
+  
+  if (!isAuth || !authTimestamp) {
     showLogin();
     return false;
   }
+
+  // 检查是否超过30分钟
+  const now = Date.now();
+  const lastActive = parseInt(authTimestamp, 10);
+  
+  if (now - lastActive > AUTH_TIMEOUT) {
+    // 超时，清除认证状态
+    localStorage.removeItem(AUTH_KEY);
+    localStorage.removeItem(AUTH_TIMESTAMP_KEY);
+    showLogin();
+    return false;
+  }
+
+  // 更新最后活动时间
+  localStorage.setItem(AUTH_TIMESTAMP_KEY, now.toString());
   return true;
 }
 
@@ -148,6 +167,7 @@ function showLogin() {
     const password = (document.getElementById("admin-password") as HTMLInputElement).value;
     if (password === ADMIN_PASSWORD) {
       localStorage.setItem(AUTH_KEY, "true");
+      localStorage.setItem(AUTH_TIMESTAMP_KEY, Date.now().toString());
       init();
     } else {
       showToast("密码错误", "error");
@@ -1016,10 +1036,15 @@ function render() {
   bindEvents();
 }
 
+function updateAuthTimestamp() {
+  localStorage.setItem(AUTH_TIMESTAMP_KEY, Date.now().toString());
+}
+
 function bindEvents() {
   document.querySelectorAll(".admin-nav-item[data-section]").forEach(btn => {
     btn.addEventListener("click", () => {
       currentSection = (btn as HTMLElement).dataset.section!;
+      updateAuthTimestamp();
       render();
     });
   });
@@ -1027,6 +1052,7 @@ function bindEvents() {
   document.querySelectorAll("[data-goto]").forEach(btn => {
     btn.addEventListener("click", () => {
       currentSection = (btn as HTMLElement).dataset.goto!;
+      updateAuthTimestamp();
       render();
     });
   });
