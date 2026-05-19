@@ -1061,9 +1061,13 @@ async function render() {
   bindEvents();
   
   if (currentSection === "leads") {
+    console.log("当前是客户信息页面，开始加载数据...");
     loadLeadsData().then(leads => {
+      console.log("loadLeadsData 返回:", leads);
       const leadsListEl = document.getElementById("leads-list");
+      console.log("leads-list 元素:", leadsListEl);
       if (leadsListEl) {
+        console.log("更新客户列表，数据条数:", leads.length);
         leadsListEl.innerHTML = leads.length > 0 
           ? leads.map((lead) => `
               <div class="admin-list-item">
@@ -1086,6 +1090,7 @@ async function render() {
               <p>暂无客户信息</p>
               <p class="admin-empty-state-desc">当访客在前台提交联系方式后，会显示在这里</p>
             </div>`;
+        console.log("客户列表已更新");
         
         const badge = document.querySelector(".admin-card-badge");
         if (badge) {
