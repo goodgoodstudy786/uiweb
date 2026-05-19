@@ -1447,7 +1447,9 @@ function showWorkModal(index: number) {
   // 初始化 Editor.js
   const uploadImageToSupabase = async (file: File): Promise<string> => {
     const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const fileName = `works/${Date.now()}_${file.name}`;
+    const ext = file.name.split(".").pop() || "png";
+    const random = Math.random().toString(36).substring(2, 8);
+    const fileName = `works/${Date.now()}_${random}.${ext}`;
     
     const { error: uploadError } = await client.storage
       .from("site-assets")

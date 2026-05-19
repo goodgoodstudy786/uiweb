@@ -17,6 +17,13 @@ export type EditorOutput = {
 
 let editorInstance: EditorJS | null = null;
 
+function sanitizeFileName(fileName: string): string {
+  const ext = fileName.split(".").pop() || "png";
+  const timestamp = Date.now();
+  const random = Math.random().toString(36).substring(2, 8);
+  return `works/${timestamp}_${random}.${ext}`;
+}
+
 export async function createEditor(containerId: string, initialData?: EditorOutput, onImageUpload?: (file: File) => Promise<string>): Promise<EditorJS> {
   if (editorInstance) {
     await editorInstance.destroy();
