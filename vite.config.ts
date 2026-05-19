@@ -13,6 +13,7 @@ export default defineConfig({
   build: {
     outDir: "dist",
     emptyOutDir: true,
+    // 代码分割优化
     rollupOptions: {
       input: {
         home: "index.html",
@@ -21,6 +22,25 @@ export default defineConfig({
         works: "works.html",
         config: "config.html",
       },
+      output: {
+        // 手动分割 chunk，减小首屏加载体积
+        manualChunks: {
+          // 后台管理相关代码单独打包
+          admin: ["./src/admin-app.ts"],
+        },
+      },
     },
+    // 压缩优化
+    minify: "terser",
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
+    // 资源内联阈值
+    assetsInlineLimit: 4096,
+    // chunk 大小警告阈值
+    chunkSizeWarningLimit: 500,
   },
 });

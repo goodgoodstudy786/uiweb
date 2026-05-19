@@ -460,17 +460,8 @@ export async function getSiteData(): Promise<HomeSiteData> {
     }
   }
 
-  // 如果没有 localStorage 数据，尝试从 Supabase 加载
-  if (HAS_SUPABASE) {
-    try {
-      return await loadSupabaseSiteData();
-    } catch (error) {
-      console.warn("Supabase 加载失败，使用默认数据:", error);
-    }
-  }
-
-  // 最后使用默认数据
-  console.log("使用默认数据");
+  // 前台直接从本地 JSON 文件加载，跳过 Supabase（国外服务器太慢）
+  console.log("从本地文件加载数据");
   return loadFallbackSiteDataSync();
 }
 
