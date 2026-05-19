@@ -28,7 +28,10 @@ function renderLogo(brand: HomepageContent["brand"], href = "./") {
       <span class="logo-mark">
         <span></span><span></span><span></span><span></span>
       </span>
-      <span class="brand-name">${escapeHtml(brand.line1)}<br />${escapeHtml(brand.line2)}</span>
+      <span class="brand-name">
+        <span class="brand-line1">${escapeHtml(brand.line1)}</span>
+        <span class="brand-line2">${escapeHtml(brand.line2)}</span>
+      </span>
     </a>
   `;
 }
