@@ -1337,16 +1337,21 @@ function showWorkModal(index: number) {
   const visual = item.visual as Record<string, unknown> || {};
   const coverUrl = String(visual.coverUrl || "");
   const coverAlt = String(visual.coverAlt || "");
+  const detailUrl = String(visual.detailUrl || "");
+  const detailAlt = String(visual.detailAlt || "");
+  const detailParagraphs = Array.isArray(visual.detailParagraphs) ? visual.detailParagraphs : [];
+  const detailParagraphsText = detailParagraphs.join("\n---\n");
 
   const modal = document.createElement("div");
   modal.className = "admin-modal-overlay";
   modal.innerHTML = `
-    <div class="admin-modal">
+    <div class="admin-modal admin-modal-large">
       <div class="admin-modal-header">
         <div class="admin-modal-title">${isEdit ? "编辑作品" : "添加作品"}</div>
         <button class="admin-modal-close">&times;</button>
       </div>
       <div class="admin-modal-body">
+        <div class="admin-section-title">基本信息</div>
         <div class="admin-form-row">
           <div class="admin-form-group">
             <label class="admin-form-label">作品 ID</label>
@@ -1366,6 +1371,12 @@ function showWorkModal(index: number) {
           <input type="text" class="admin-form-input" id="modal-work-meta" value="${escapeHtml(item.meta)}">
         </div>
         <div class="admin-form-group">
+          <label class="admin-form-label">链接地址</label>
+          <input type="text" class="admin-form-input" id="modal-work-href" value="${escapeHtml(item.href)}">
+        </div>
+
+        <div class="admin-section-title">封面图片（列表页显示）</div>
+        <div class="admin-form-group">
           <label class="admin-form-label">封面图片</label>
           <div style="display:flex;gap:8px;align-items:center;">
             <input type="file" id="modal-work-cover-file" accept="image/*" style="flex:1;">
@@ -1377,9 +1388,23 @@ function showWorkModal(index: number) {
           <label class="admin-form-label">封面图片描述 (alt)</label>
           <input type="text" class="admin-form-input" id="modal-work-cover-alt" value="${escapeHtml(coverAlt)}">
         </div>
+
+        <div class="admin-section-title">详情页内容</div>
         <div class="admin-form-group">
-          <label class="admin-form-label">链接地址</label>
-          <input type="text" class="admin-form-input" id="modal-work-href" value="${escapeHtml(item.href)}">
+          <label class="admin-form-label">详情图片</label>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input type="file" id="modal-work-detail-file" accept="image/*" style="flex:1;">
+            <button type="button" class="admin-btn admin-btn-secondary admin-btn-sm" id="btn-upload-detail">上传</button>
+          </div>
+          <input type="text" class="admin-form-input" id="modal-work-detail" value="${escapeHtml(detailUrl)}" placeholder="或输入图片URL" style="margin-top:8px;">
+        </div>
+        <div class="admin-form-group">
+          <label class="admin-form-label">详情图片描述 (alt)</label>
+          <input type="text" class="admin-form-input" id="modal-work-detail-alt" value="${escapeHtml(detailAlt)}">
+        </div>
+        <div class="admin-form-group">
+          <label class="admin-form-label">详情文字段落（每段用 --- 分隔）</label>
+          <textarea class="admin-form-textarea" id="modal-work-detail-paragraphs" rows="8" placeholder="输入详情段落，每段用 --- 分隔">${escapeHtml(detailParagraphsText)}</textarea>
         </div>
       </div>
       <div class="admin-modal-footer">
@@ -1391,14 +1416,14 @@ function showWorkModal(index: number) {
 
   document.body.appendChild(modal);
 
-  // 图片上传功能
+  // 封面图片上传功能
   const btnUploadCover = modal.querySelector("#btn-upload-cover") as HTMLButtonElement;
-  const fileInput = modal.querySelector("#modal-work-cover-file") as HTMLInputElement;
+  const fileInputCover = modal.querySelector("#modal-work-cover-file") as HTMLInputElement;
   const coverInput = modal.querySelector("#modal-work-cover") as HTMLInputElement;
   
-  if (btnUploadCover && fileInput && coverInput) {
+  if (btnUploadCover && fileInputCover && coverInput) {
     btnUploadCover.addEventListener("click", async () => {
-      const file = fileInput.files?.[0];
+      const file = fileInputCover.files?.[0];
       if (!file) {
         showToast("请先选择图片文件", "error");
         return;
@@ -1422,13 +1447,55 @@ function showWorkModal(index: number) {
           .getPublicUrl(fileName);
         
         coverInput.value = data.publicUrl;
-        showToast("图片上传成功！", "success");
+        showToast("封面图片上传成功！", "success");
       } catch (e: any) {
-        console.error("图片上传失败:", e);
-        showToast("图片上传失败: " + (e.message || "未知错误"), "error");
+        console.error("封面图片上传失败:", e);
+        showToast("封面图片上传失败: " + (e.message || "未知错误"), "error");
       } finally {
         btnUploadCover.textContent = "上传";
         btnUploadCover.disabled = false;
+      }
+    });
+  }
+
+  // 详情图片上传功能
+  const btnUploadDetail = modal.querySelector("#btn-upload-detail") as HTMLButtonElement;
+  const fileInputDetail = modal.querySelector("#modal-work-detail-file") as HTMLInputElement;
+  const detailInput = modal.querySelector("#modal-work-detail") as HTMLInputElement;
+  
+  if (btnUploadDetail && fileInputDetail && detailInput) {
+    btnUploadDetail.addEventListener("click", async () => {
+      const file = fileInputDetail.files?.[0];
+      if (!file) {
+        showToast("请先选择图片文件", "error");
+        return;
+      }
+      
+      btnUploadDetail.textContent = "上传中...";
+      btnUploadDetail.disabled = true;
+      
+      try {
+        const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const fileName = `works/${Date.now()}_${file.name}`;
+        
+        const { error: uploadError } = await client.storage
+          .from("site-assets")
+          .upload(fileName, file);
+        
+        if (uploadError) throw uploadError;
+        
+        const { data } = client.storage
+          .from("site-assets")
+          .getPublicUrl(fileName);
+        
+        detailInput.value = data.publicUrl;
+        showToast("详情图片上传成功！", "success");
+      } catch (e: any) {
+        console.error("详情图片上传失败:", e);
+        showToast("详情图片上传失败: " + (e.message || "未知错误"), "error");
+      } finally {
+        btnUploadDetail.textContent = "上传";
+        btnUploadDetail.disabled = false;
       }
     });
   }
@@ -1443,6 +1510,14 @@ function showWorkModal(index: number) {
     const href = (modal.querySelector("#modal-work-href") as HTMLInputElement).value;
     const coverUrl = (modal.querySelector("#modal-work-cover") as HTMLInputElement).value;
     const coverAlt = (modal.querySelector("#modal-work-cover-alt") as HTMLInputElement).value;
+    const detailUrl = (modal.querySelector("#modal-work-detail") as HTMLInputElement).value;
+    const detailAlt = (modal.querySelector("#modal-work-detail-alt") as HTMLInputElement).value;
+    const detailParagraphsRaw = (modal.querySelector("#modal-work-detail-paragraphs") as HTMLTextAreaElement).value;
+    const detailParagraphs = detailParagraphsRaw
+      .split(/\n---\n/)
+      .map(p => p.trim())
+      .filter(p => p.length > 0);
+    
     if (siteData) {
       const workData = {
         id,
@@ -1450,7 +1525,13 @@ function showWorkModal(index: number) {
         title,
         meta,
         href,
-        visual: { coverUrl, coverAlt },
+        visual: { 
+          coverUrl, 
+          coverAlt,
+          detailUrl,
+          detailAlt,
+          detailParagraphs,
+        },
       };
       if (isEdit) {
         siteData.works[index] = workData;
