@@ -292,14 +292,54 @@ async function saveSiteData() {
   // 后台尝试同步到 Supabase（不影响用户体验）
   try {
     const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { error } = await client
+    
+    // 同步 homepage 数据
+    const { error: homepageError } = await client
       .from("homepage")
       .upsert({ slug: "main", content: siteData, is_active: true }, { onConflict: "slug" });
     
-    if (error) {
-      console.warn("Supabase 同步失败:", error.message);
+    if (homepageError) {
+      console.warn("Supabase homepage 同步失败:", homepageError.message);
     } else {
-      console.log("已同步到 Supabase");
+      console.log("已同步 homepage 到 Supabase");
+    }
+    
+    // 同步 works 数据到 projects 表
+    if (siteData.works && siteData.works.length > 0) {
+      // 先删除旧的 projects 数据
+      await client.from("projects").delete().neq("id", 0);
+      
+      // 将 works 转换为 projects 格式
+      const projectsData = siteData.works.map((work, index) => {
+        const visual = work.visual as Record<string, unknown> || {};
+        return {
+          slug: work.slug || `work-${index + 1}`,
+          title: work.title || "未命名作品",
+          category: "作品案例",
+          summary: work.meta || "",
+          layout_variant: "image",
+          cover_image_path: null,
+          cover_image_url: String(visual.coverUrl || ""),
+          cover_image_alt: String(visual.coverAlt || work.title || ""),
+          detail_image_path: null,
+          detail_image_url: null,
+          detail_image_alt: null,
+          detail_paragraphs: [],
+          sort_order: index,
+          published: true,
+        };
+      });
+      
+      // 批量插入 projects
+      const { error: projectsError } = await client
+        .from("projects")
+        .insert(projectsData);
+      
+      if (projectsError) {
+        console.warn("Supabase projects 同步失败:", projectsError.message);
+      } else {
+        console.log("已同步 works 到 Supabase projects");
+      }
     }
   } catch (error) {
     console.warn("Supabase 同步失败:", error);
