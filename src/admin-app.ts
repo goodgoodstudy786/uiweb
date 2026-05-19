@@ -306,21 +306,37 @@ async function saveSiteData() {
     
     // 同步 works 数据到 projects 表
     if (siteData.works && siteData.works.length > 0) {
+      console.log("开始同步 works 到 projects，共", siteData.works.length, "个作品");
+      
       // 先删除旧的 projects 数据
-      await client.from("projects").delete().neq("id", 0);
+      const { error: deleteError } = await client.from("projects").delete().neq("id", 0);
+      if (deleteError) {
+        console.warn("删除旧 projects 失败:", deleteError.message);
+      }
       
       // 将 works 转换为 projects 格式
       const projectsData = siteData.works.map((work, index) => {
         const visual = work.visual as Record<string, unknown> || {};
+        const coverUrl = String(visual.coverUrl || "");
+        const coverAlt = String(visual.coverAlt || work.title || "");
+        
+        console.log(`作品 ${index + 1}:`, {
+          slug: work.slug,
+          title: work.title,
+          coverUrl,
+          coverAlt,
+          visualKeys: Object.keys(visual),
+        });
+        
         return {
           slug: work.slug || `work-${index + 1}`,
           title: work.title || "未命名作品",
           category: "作品案例",
           summary: work.meta || "",
-          layout_variant: "image",
+          layout_variant: String(visual.variant || "image"),
           cover_image_path: null,
-          cover_image_url: String(visual.coverUrl || ""),
-          cover_image_alt: String(visual.coverAlt || work.title || ""),
+          cover_image_url: coverUrl,
+          cover_image_alt: coverAlt,
           detail_image_path: null,
           detail_image_url: null,
           detail_image_alt: null,
@@ -330,16 +346,21 @@ async function saveSiteData() {
         };
       });
       
+      console.log("准备插入 projects 数据:", JSON.stringify(projectsData, null, 2));
+      
       // 批量插入 projects
-      const { error: projectsError } = await client
+      const { error: projectsError, data: insertedData } = await client
         .from("projects")
-        .insert(projectsData);
+        .insert(projectsData)
+        .select();
       
       if (projectsError) {
-        console.warn("Supabase projects 同步失败:", projectsError.message);
+        console.error("Supabase projects 同步失败:", projectsError.message, projectsError.details);
       } else {
-        console.log("已同步 works 到 Supabase projects");
+        console.log("已同步 works 到 Supabase projects，插入", insertedData?.length || 0, "条记录");
       }
+    } else {
+      console.log("没有 works 数据，跳过 projects 同步");
     }
   } catch (error) {
     console.warn("Supabase 同步失败:", error);

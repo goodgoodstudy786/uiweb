@@ -390,10 +390,39 @@ async function loadSupabaseSiteData(): Promise<HomeSiteData> {
       homepage = mergeDeep(fallback.homepage, normalizeHomepageContent(content));
     }
 
-    // 处理 projects 数据 - 优先使用 Supabase 的 projects
-    const projects = projectsResponse.data?.length
-      ? (projectsResponse.data as SupabaseProjectRow[]).map(normalizeProjectRow)
-      : fallback.projects;
+    // 处理 projects 数据 - 优先从 homepage.content.works 提取，其次使用 projects 表
+    let projects = fallback.projects;
+    
+    // 尝试从 homepage content 中提取 works
+    const works = (content as Record<string, unknown>)?.works;
+    if (Array.isArray(works) && works.length > 0) {
+      console.log("从 homepage.content.works 提取 projects，共", works.length, "个作品");
+      projects = works.map((work: Record<string, unknown>, index: number) => {
+        const visual = (work.visual as Record<string, unknown>) || {};
+        const coverUrl = String(visual.coverUrl || "");
+        const coverAlt = String(visual.coverAlt || work.title || "");
+        
+        return {
+          slug: String(work.slug || work.id || `work-${index + 1}`),
+          title: String(work.title || "未命名作品"),
+          category: "作品案例",
+          summary: String(work.meta || ""),
+          layout_variant: String(visual.variant || "image"),
+          cover_image_path: null,
+          cover_image_url: coverUrl || null,
+          cover_image_alt: coverAlt,
+          detail_image_path: null,
+          detail_image_url: null,
+          detail_image_alt: coverAlt,
+          detail_paragraphs: [],
+          sort_order: index,
+          published: true,
+        };
+      }) as ProjectRow[];
+    } else if (projectsResponse.data?.length) {
+      console.log("从 projects 表加载数据，共", projectsResponse.data.length, "个作品");
+      projects = (projectsResponse.data as SupabaseProjectRow[]).map(normalizeProjectRow);
+    }
 
     // 处理 social links 数据
     const socialLinks = socialResponse.data?.length
