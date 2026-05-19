@@ -401,11 +401,7 @@ async function loadSupabaseSiteData(): Promise<HomeSiteData> {
         const visual = (work.visual as Record<string, unknown>) || {};
         const coverUrl = String(visual.coverUrl || "");
         const coverAlt = String(visual.coverAlt || work.title || "");
-        const detailUrl = String(visual.detailUrl || "");
-        const detailAlt = String(visual.detailAlt || coverAlt);
-        const detailParagraphs = Array.isArray(visual.detailParagraphs) 
-          ? (visual.detailParagraphs as string[]).filter(p => p.trim().length > 0)
-          : [];
+        const detailContent = (visual.detailContent as EditorOutput) || null;
         
         return {
           slug: String(work.slug || work.id || `work-${index + 1}`),
@@ -417,9 +413,10 @@ async function loadSupabaseSiteData(): Promise<HomeSiteData> {
           cover_image_url: coverUrl || null,
           cover_image_alt: coverAlt,
           detail_image_path: null,
-          detail_image_url: detailUrl || null,
-          detail_image_alt: detailAlt,
-          detail_paragraphs: detailParagraphs,
+          detail_image_url: null,
+          detail_image_alt: null,
+          detail_paragraphs: [],
+          detail_content: detailContent,
           sort_order: index,
           published: true,
         };

@@ -1948,6 +1948,88 @@ input:focus-visible {
   color: var(--faint);
 }
 
+.case-body-copy h2,
+.case-body-copy h3,
+.case-body-copy h4 {
+  margin: 24px 0 12px;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.case-body-copy h2 {
+  font-size: 28px;
+}
+
+.case-body-copy h3 {
+  font-size: 22px;
+}
+
+.case-body-copy h4 {
+  font-size: 18px;
+}
+
+.case-body-copy ul,
+.case-body-copy ol {
+  margin: 12px 0;
+  padding-left: 24px;
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1.85;
+}
+
+.case-body-copy li {
+  margin: 6px 0;
+}
+
+.case-body-copy blockquote.editor-quote {
+  margin: 20px 0;
+  padding: 16px 20px;
+  border-left: 4px solid var(--accent);
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 0 8px 8px 0;
+}
+
+.case-body-copy blockquote.editor-quote p {
+  margin: 0 0 8px;
+  font-style: italic;
+  color: var(--text);
+}
+
+.case-body-copy blockquote.editor-quote cite {
+  font-size: 14px;
+  color: var(--faint);
+  font-style: normal;
+}
+
+.case-body-copy .editor-delimiter {
+  text-align: center;
+  color: var(--faint);
+  font-size: 20px;
+  letter-spacing: 12px;
+  margin: 32px 0;
+}
+
+.case-body-copy figure.editor-image {
+  margin: 24px 0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.case-body-copy figure.editor-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 12px;
+}
+
+.case-body-copy figure.editor-image figcaption {
+  text-align: center;
+  font-size: 14px;
+  color: var(--faint);
+  margin-top: 12px;
+  padding: 0 16px;
+}
+
 .case-body-visual {
   margin: 0;
 }

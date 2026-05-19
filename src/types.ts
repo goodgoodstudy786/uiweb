@@ -115,6 +115,15 @@ export interface HomepageContent {
   };
 }
 
+export interface EditorBlock {
+  type: string;
+  data: Record<string, unknown>;
+}
+
+export interface EditorOutput {
+  blocks: EditorBlock[];
+}
+
 export interface ProjectRow {
   slug: string;
   title: string;
@@ -128,6 +137,7 @@ export interface ProjectRow {
   detail_image_url: string | null;
   detail_image_alt: string | null;
   detail_paragraphs: string[];
+  detail_content: EditorOutput | null;
   sort_order: number;
   published: boolean;
 }

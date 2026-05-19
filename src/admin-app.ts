@@ -1,5 +1,6 @@
 import type { InspirationItem, NavigationLink } from "./types";
 import { createClient } from "@supabase/supabase-js";
+import { createEditor, getEditorData, destroyEditor, type EditorOutput } from "./editor";
 
 function escapeHtml(value: unknown) {
   return String(value)
@@ -1337,15 +1338,12 @@ function showWorkModal(index: number) {
   const visual = item.visual as Record<string, unknown> || {};
   const coverUrl = String(visual.coverUrl || "");
   const coverAlt = String(visual.coverAlt || "");
-  const detailUrl = String(visual.detailUrl || "");
-  const detailAlt = String(visual.detailAlt || "");
-  const detailParagraphs = Array.isArray(visual.detailParagraphs) ? visual.detailParagraphs : [];
-  const detailParagraphsText = detailParagraphs.join("\n---\n");
+  const detailContent = (visual.detailContent as EditorOutput) || null;
 
   const modal = document.createElement("div");
   modal.className = "admin-modal-overlay";
   modal.innerHTML = `
-    <div class="admin-modal admin-modal-large">
+    <div class="admin-modal admin-modal-large admin-modal-xl">
       <div class="admin-modal-header">
         <div class="admin-modal-title">${isEdit ? "编辑作品" : "添加作品"}</div>
         <button class="admin-modal-close">&times;</button>
@@ -1389,22 +1387,10 @@ function showWorkModal(index: number) {
           <input type="text" class="admin-form-input" id="modal-work-cover-alt" value="${escapeHtml(coverAlt)}">
         </div>
 
-        <div class="admin-section-title">详情页内容</div>
+        <div class="admin-section-title">详情页内容（富文本编辑器）</div>
         <div class="admin-form-group">
-          <label class="admin-form-label">详情图片</label>
-          <div style="display:flex;gap:8px;align-items:center;">
-            <input type="file" id="modal-work-detail-file" accept="image/*" style="flex:1;">
-            <button type="button" class="admin-btn admin-btn-secondary admin-btn-sm" id="btn-upload-detail">上传</button>
-          </div>
-          <input type="text" class="admin-form-input" id="modal-work-detail" value="${escapeHtml(detailUrl)}" placeholder="或输入图片URL" style="margin-top:8px;">
-        </div>
-        <div class="admin-form-group">
-          <label class="admin-form-label">详情图片描述 (alt)</label>
-          <input type="text" class="admin-form-input" id="modal-work-detail-alt" value="${escapeHtml(detailAlt)}">
-        </div>
-        <div class="admin-form-group">
-          <label class="admin-form-label">详情文字段落（每段用 --- 分隔）</label>
-          <textarea class="admin-form-textarea" id="modal-work-detail-paragraphs" rows="8" placeholder="输入详情段落，每段用 --- 分隔">${escapeHtml(detailParagraphsText)}</textarea>
+          <label class="admin-form-label">使用编辑器添加文字、图片、标题等（支持图文混排）</label>
+          <div id="editor-container" style="border:1px solid var(--admin-border);border-radius:8px;min-height:300px;background:#fff;"></div>
         </div>
       </div>
       <div class="admin-modal-footer">
@@ -1458,50 +1444,36 @@ function showWorkModal(index: number) {
     });
   }
 
-  // 详情图片上传功能
-  const btnUploadDetail = modal.querySelector("#btn-upload-detail") as HTMLButtonElement;
-  const fileInputDetail = modal.querySelector("#modal-work-detail-file") as HTMLInputElement;
-  const detailInput = modal.querySelector("#modal-work-detail") as HTMLInputElement;
-  
-  if (btnUploadDetail && fileInputDetail && detailInput) {
-    btnUploadDetail.addEventListener("click", async () => {
-      const file = fileInputDetail.files?.[0];
-      if (!file) {
-        showToast("请先选择图片文件", "error");
-        return;
-      }
-      
-      btnUploadDetail.textContent = "上传中...";
-      btnUploadDetail.disabled = true;
-      
-      try {
-        const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        const fileName = `works/${Date.now()}_${file.name}`;
-        
-        const { error: uploadError } = await client.storage
-          .from("site-assets")
-          .upload(fileName, file);
-        
-        if (uploadError) throw uploadError;
-        
-        const { data } = client.storage
-          .from("site-assets")
-          .getPublicUrl(fileName);
-        
-        detailInput.value = data.publicUrl;
-        showToast("详情图片上传成功！", "success");
-      } catch (e: any) {
-        console.error("详情图片上传失败:", e);
-        showToast("详情图片上传失败: " + (e.message || "未知错误"), "error");
-      } finally {
-        btnUploadDetail.textContent = "上传";
-        btnUploadDetail.disabled = false;
-      }
-    });
-  }
+  // 初始化 Editor.js
+  const uploadImageToSupabase = async (file: File): Promise<string> => {
+    const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const fileName = `works/${Date.now()}_${file.name}`;
+    
+    const { error: uploadError } = await client.storage
+      .from("site-assets")
+      .upload(fileName, file);
+    
+    if (uploadError) throw uploadError;
+    
+    const { data } = client.storage
+      .from("site-assets")
+      .getPublicUrl(fileName);
+    
+    return data.publicUrl;
+  };
 
-  modal.querySelector(".admin-modal-close")!.addEventListener("click", () => modal.remove());
-  modal.querySelector("#modal-work-cancel")!.addEventListener("click", () => modal.remove());
+  createEditor("editor-container", detailContent || undefined, uploadImageToSupabase).catch(err => {
+    console.error("编辑器初始化失败:", err);
+  });
+
+  modal.querySelector(".admin-modal-close")!.addEventListener("click", async () => {
+    await destroyEditor();
+    modal.remove();
+  });
+  modal.querySelector("#modal-work-cancel")!.addEventListener("click", async () => {
+    await destroyEditor();
+    modal.remove();
+  });
   modal.querySelector("#modal-work-save")!.addEventListener("click", async () => {
     const id = (modal.querySelector("#modal-work-id") as HTMLInputElement).value;
     const slug = (modal.querySelector("#modal-work-slug") as HTMLInputElement).value;
@@ -1510,13 +1482,8 @@ function showWorkModal(index: number) {
     const href = (modal.querySelector("#modal-work-href") as HTMLInputElement).value;
     const coverUrl = (modal.querySelector("#modal-work-cover") as HTMLInputElement).value;
     const coverAlt = (modal.querySelector("#modal-work-cover-alt") as HTMLInputElement).value;
-    const detailUrl = (modal.querySelector("#modal-work-detail") as HTMLInputElement).value;
-    const detailAlt = (modal.querySelector("#modal-work-detail-alt") as HTMLInputElement).value;
-    const detailParagraphsRaw = (modal.querySelector("#modal-work-detail-paragraphs") as HTMLTextAreaElement).value;
-    const detailParagraphs = detailParagraphsRaw
-      .split(/\n---\n/)
-      .map(p => p.trim())
-      .filter(p => p.length > 0);
+    
+    const editorData = await getEditorData();
     
     if (siteData) {
       const workData = {
@@ -1528,9 +1495,7 @@ function showWorkModal(index: number) {
         visual: { 
           coverUrl, 
           coverAlt,
-          detailUrl,
-          detailAlt,
-          detailParagraphs,
+          detailContent: editorData,
         },
       };
       if (isEdit) {
@@ -1538,14 +1503,18 @@ function showWorkModal(index: number) {
       } else {
         siteData.works.push(workData);
       }
+      await destroyEditor();
       saveSiteData();
       await render();
     }
     modal.remove();
   });
 
-  modal.addEventListener("click", (e) => {
-    if (e.target === modal) modal.remove();
+  modal.addEventListener("click", async (e) => {
+    if (e.target === modal) {
+      await destroyEditor();
+      modal.remove();
+    }
   });
 }
 

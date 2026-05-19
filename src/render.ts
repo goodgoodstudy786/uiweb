@@ -1,5 +1,6 @@
 import type { HomeSiteData, HomepageContent, InspirationItem, ProjectRow, SocialLinkRow } from "./types";
 import { normalizeHref } from "./api";
+import { renderEditorContent } from "./editor-renderer";
 
 function escapeHtml(value: unknown) {
   return String(value)
@@ -569,7 +570,9 @@ function renderProjectCard(project: ProjectRow) {
 
 function renderCasePage(site: HomeSiteData, project: ProjectRow) {
   const related = site.projects.filter((item) => item.slug !== project.slug && item.published);
-  const mainVisual = renderProjectArtwork(project, { detail: true });
+  const editorContent = project.detail_content ? renderEditorContent(project.detail_content) : "";
+  const fallbackContent = project.detail_paragraphs.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("");
+  const bodyContent = editorContent || fallbackContent || `<p>${escapeHtml(project.summary)}</p>`;
 
   return `
     <main id="top">
@@ -584,11 +587,8 @@ function renderCasePage(site: HomeSiteData, project: ProjectRow) {
       <section class="section case-body reveal" aria-labelledby="case-body-title">
         <div class="case-body-copy">
           <p class="tiny-label" id="case-body-title">项目说明</p>
-          ${project.detail_paragraphs.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("")}
+          ${bodyContent}
         </div>
-        <figure class="case-body-visual">
-          ${mainVisual}
-        </figure>
       </section>
 
       ${
