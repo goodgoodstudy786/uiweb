@@ -164,13 +164,16 @@ function showLogin() {
 
   document.getElementById("login-form")?.addEventListener("submit", (e) => {
     e.preventDefault();
-    const password = (document.getElementById("admin-password") as HTMLInputElement).value;
+    const input = document.getElementById("admin-password") as HTMLInputElement;
+    const password = input.value;
     if (password === ADMIN_PASSWORD) {
       localStorage.setItem(AUTH_KEY, "true");
       localStorage.setItem(AUTH_TIMESTAMP_KEY, Date.now().toString());
       init();
     } else {
-      showToast("密码错误", "error");
+      showToast("密码错误，请重试", "error");
+      input.value = "";
+      input.focus();
     }
   });
 

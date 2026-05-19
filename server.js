@@ -74,13 +74,13 @@ async function saveJson(filePath, value) {
 async function loadSiteData() {
   return loadJson(SITE_FILE, {
     meta: {
-      title: "林若安 界面设计师",
-      description: "林若安，界面设计师个人官网。",
+      title: "京鹏JPENG 界面设计师",
+      description: "京鹏JPENG，界面设计师个人官网。",
     },
     brand: {
-      line1: "林若安",
+      line1: "京鹏JPENG",
       line2: "界面设计师",
-      loaderLabel: "林若安设计",
+      loaderLabel: "京鹏JPENG",
     },
     navigationTitle: "导航",
     worksSection: {
@@ -145,7 +145,7 @@ async function loadSiteData() {
       servicesLinks: [],
       contactTitle: "联系",
       contactLinks: [],
-      copyright: "© 2026 林若安设计。保留所有权利。",
+      copyright: "© 2026 京鹏JPENG。保留所有权利。",
       email: "hello@ruoan.design",
     },
     leadModal: {
@@ -512,7 +512,7 @@ function renderHeader(site, homeHref = "#top") {
         <span class="logo-mark">
           <span></span><span></span><span></span><span></span>
         </span>
-        <span class="brand-name">${escapeHtml(site.brand?.line1 || "林若安")}<br />${escapeHtml(site.brand?.line2 || "界面设计师")}</span>
+        <span class="brand-name">${escapeHtml(site.brand?.line1 || "京鹏JPENG")}<br />${escapeHtml(site.brand?.line2 || "界面设计师")}</span>
       </a>
 
       <button class="menu-button" type="button" aria-label="打开菜单" aria-expanded="false">
@@ -571,7 +571,7 @@ function renderHomePage(site) {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="${escapeAttr(site.meta?.description || "")}" />
-    <title>${escapeHtml(site.meta?.title || "林若安 界面设计师")}</title>
+    <title>${escapeHtml(site.meta?.title || "京鹏JPENG 界面设计师")}</title>
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
@@ -579,7 +579,7 @@ function renderHomePage(site) {
       <div class="logo-mark loader-mark">
         <span></span><span></span><span></span><span></span>
       </div>
-      <p>${escapeHtml(site.brand?.loaderLabel || "林若安设计")}</p>
+      <p>${escapeHtml(site.brand?.loaderLabel || "京鹏JPENG")}</p>
     </div>
 
     ${renderHeader(site, "#top")}
@@ -692,7 +692,7 @@ function renderHomePage(site) {
             <span class="logo-mark">
               <span></span><span></span><span></span><span></span>
             </span>
-            <span class="brand-name">${escapeHtml(site.brand?.line1 || "林若安")}<br />${escapeHtml(site.brand?.line2 || "界面设计师")}</span>
+            <span class="brand-name">${escapeHtml(site.brand?.line1 || "京鹏JPENG")}<br />${escapeHtml(site.brand?.line2 || "界面设计师")}</span>
           </a>
           <p>${escapeHtml(site.footer?.brandDescription || "")}</p>
         </div>
@@ -748,7 +748,7 @@ function renderCasePage(site, caseItem) {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="${escapeAttr(site.meta?.description || "")}" />
-    <title>${escapeHtml(caseItem.title)} / ${escapeHtml(site.meta?.title || "林若安 界面设计师")}</title>
+    <title>${escapeHtml(caseItem.title)} / ${escapeHtml(site.meta?.title || "京鹏JPENG 界面设计师")}</title>
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body class="case-page">
@@ -756,7 +756,7 @@ function renderCasePage(site, caseItem) {
       <div class="logo-mark loader-mark">
         <span></span><span></span><span></span><span></span>
       </div>
-      <p>${escapeHtml(site.brand?.loaderLabel || "林若安设计")}</p>
+      <p>${escapeHtml(site.brand?.loaderLabel || "京鹏JPENG")}</p>
     </div>
 
     ${renderHeader(site, "/")}
@@ -808,7 +808,7 @@ function renderInspirationPage(site) {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="${escapeAttr(site.meta?.description || "")}" />
-    <title>灵感库 / ${escapeHtml(site.meta?.title || "林若安 界面设计师")}</title>
+    <title>灵感库 / ${escapeHtml(site.meta?.title || "京鹏JPENG 界面设计师")}</title>
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body class="inspiration-page">
@@ -816,7 +816,7 @@ function renderInspirationPage(site) {
       <div class="logo-mark loader-mark">
         <span></span><span></span><span></span><span></span>
       </div>
-      <p>${escapeHtml(site.brand?.loaderLabel || "林若安设计")}</p>
+      <p>${escapeHtml(site.brand?.loaderLabel || "京鹏JPENG")}</p>
     </div>
 
     ${renderHeader(site, "/")}
@@ -860,7 +860,7 @@ function renderAdminPage() {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>后台内容管理 / 林若安</title>
+    <title>后台内容管理 / 京鹏JPENG</title>
     <style>
       :root {
         --bg: #080808;

@@ -111,13 +111,13 @@ values (
   $json$
   {
     "meta": {
-      "title": "林若安 界面设计师",
-      "description": "林若安，界面设计师个人官网。展示产品界面设计、设计系统、作品案例、关于我与灵感收藏。"
+      "title": "京鹏JPENG 界面设计师",
+      "description": "京鹏JPENG，界面设计师个人官网。展示产品界面设计、设计系统、作品案例、关于我与灵感收藏。"
     },
     "brand": {
-      "line1": "林若安",
+      "line1": "京鹏JPENG",
       "line2": "界面设计师",
-      "loaderLabel": "林若安设计"
+      "loaderLabel": "京鹏JPENG"
     },
     "navigationTitle": "导航",
     "worksSection": {
@@ -318,7 +318,7 @@ values (
         { "label": "灵感收藏", "href": "/inspiration.html" }
       ],
       "contactTitle": "联系",
-      "copyright": "© 2026 林若安设计。保留所有权利。",
+      "copyright": "© 2026 京鹏JPENG。保留所有权利。",
       "email": "hello@ruoan.design"
     },
     "leadModal": {

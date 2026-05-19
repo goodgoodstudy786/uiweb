@@ -433,7 +433,7 @@ if (caseRoot) {
   const caseId = getCaseIdFromLocation();
   const caseItem = catalog[caseId] || Object.values(catalog)[0];
   document.body.classList.add("case-page");
-  document.title = `${caseItem.title} / 林若安 界面设计师`;
+  document.title = `${caseItem.title} / 京鹏JPENG 界面设计师`;
   if (!SITE_DATA?.cases?.length) {
     caseRoot.innerHTML = renderCasePage(caseItem);
   }
