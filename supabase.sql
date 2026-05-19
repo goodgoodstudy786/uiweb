@@ -105,6 +105,20 @@ create policy "Anyone can submit leads"
   to anon, authenticated
   with check (true);
 
+drop policy if exists "Anyone can read leads" on public.lead_submissions;
+create policy "Anyone can read leads"
+  on public.lead_submissions
+  for select
+  to anon, authenticated
+  using (true);
+
+drop policy if exists "Anyone can delete leads" on public.lead_submissions;
+create policy "Anyone can delete leads"
+  on public.lead_submissions
+  for delete
+  to anon, authenticated
+  using (true);
+
 insert into public.homepage (slug, content, is_active)
 values (
   'main',
