@@ -218,7 +218,8 @@ async function loadSiteData() {
 
   // 从 Supabase 加载
   try {
-    const { data, error } = await supabase
+    const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const { data, error } = await client
       .from("homepage")
       .select("content")
       .eq("slug", "main")
@@ -281,7 +282,8 @@ async function saveSiteData() {
   
   // 后台尝试同步到 Supabase（不影响用户体验）
   try {
-    const { error } = await supabase
+    const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const { error } = await client
       .from("homepage")
       .upsert({ slug: "main", content: siteData, is_active: true }, { onConflict: "slug" });
     
@@ -1008,7 +1010,8 @@ async function loadLeadsData() {
   }
   
   try {
-    const { data, error } = await supabase
+    const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const { data, error } = await client
       .from("lead_submissions")
       .select("*")
       .order("created_at", { ascending: false });
@@ -1094,7 +1097,8 @@ async function render() {
             const leadId = (btn as HTMLElement).dataset.deleteLead!;
             if (confirm("确定要删除这条客户信息吗？")) {
               try {
-                const { error } = await supabase
+                const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                const { error } = await client
                   .from("lead_submissions")
                   .delete()
                   .eq("id", leadId);
@@ -1553,7 +1557,8 @@ function collectFormData() {
 
 async function initSupabaseData() {
   // 检查 Supabase 是否已有数据
-  const { data, error } = await supabase
+  const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const { data, error } = await client
     .from("homepage")
     .select("slug")
     .eq("slug", "main")
@@ -1570,7 +1575,7 @@ async function initSupabaseData() {
     if (!response.ok) throw new Error("Failed to load initial data");
     const initialData = await response.json();
     
-    const { error: insertError } = await supabase
+    const { error: insertError } = await client
       .from("homepage")
       .insert({ slug: "main", content: initialData, is_active: true });
     
