@@ -1155,7 +1155,7 @@ function bindNavigationEvents() {
       const index = parseInt((btn as HTMLElement).dataset.deleteNav!);
       if (siteData && confirm("确定要删除这个导航链接吗？")) {
         siteData.navigation.splice(index, 1);
-        saveToSupabase();
+        saveSiteData();
         await render();
       }
     });
@@ -1180,7 +1180,7 @@ function bindWorksEvents() {
       const index = parseInt((btn as HTMLElement).dataset.deleteWork!);
       if (siteData && confirm("确定要删除这个作品吗？")) {
         siteData.works.splice(index, 1);
-        saveToSupabase();
+        saveSiteData();
         await render();
       }
     });
@@ -1205,7 +1205,7 @@ function bindInspirationEvents() {
       const index = parseInt((btn as HTMLElement).dataset.deleteInspiration!);
       if (siteData && confirm("确定要删除这个灵感条目吗？")) {
         siteData.inspiration.items.splice(index, 1);
-        saveToSupabase();
+        saveSiteData();
         await render();
       }
     });
@@ -1259,7 +1259,7 @@ function showNavModal(index: number) {
       } else {
         siteData.navigation.push({ label, href });
       }
-      saveToSupabase();
+      saveSiteData();
       await render();
     }
     modal.remove();
@@ -1273,6 +1273,9 @@ function showNavModal(index: number) {
 function showWorkModal(index: number) {
   const isEdit = index >= 0;
   const item = isEdit && siteData ? siteData.works[index] : { id: "", slug: "", title: "", meta: "", href: "", visual: {} };
+  const visual = item.visual as Record<string, unknown> || {};
+  const coverUrl = String(visual.coverUrl || "");
+  const coverAlt = String(visual.coverAlt || "");
 
   const modal = document.createElement("div");
   modal.className = "admin-modal-overlay";
@@ -1286,24 +1289,32 @@ function showWorkModal(index: number) {
         <div class="admin-form-row">
           <div class="admin-form-group">
             <label class="admin-form-label">作品 ID</label>
-            <input type="text" class="admin-form-input" id="modal-work-id" value="${item.id}">
+            <input type="text" class="admin-form-input" id="modal-work-id" value="${escapeHtml(item.id)}">
           </div>
           <div class="admin-form-group">
             <label class="admin-form-label">Slug</label>
-            <input type="text" class="admin-form-input" id="modal-work-slug" value="${item.slug}">
+            <input type="text" class="admin-form-input" id="modal-work-slug" value="${escapeHtml(item.slug)}">
           </div>
         </div>
         <div class="admin-form-group">
           <label class="admin-form-label">作品标题</label>
-          <input type="text" class="admin-form-input" id="modal-work-title" value="${item.title}">
+          <input type="text" class="admin-form-input" id="modal-work-title" value="${escapeHtml(item.title)}">
         </div>
         <div class="admin-form-group">
           <label class="admin-form-label">作品描述 (meta)</label>
-          <input type="text" class="admin-form-input" id="modal-work-meta" value="${item.meta}">
+          <input type="text" class="admin-form-input" id="modal-work-meta" value="${escapeHtml(item.meta)}">
+        </div>
+        <div class="admin-form-group">
+          <label class="admin-form-label">封面图片 URL</label>
+          <input type="text" class="admin-form-input" id="modal-work-cover" value="${escapeHtml(coverUrl)}" placeholder="https://example.com/image.jpg">
+        </div>
+        <div class="admin-form-group">
+          <label class="admin-form-label">封面图片描述 (alt)</label>
+          <input type="text" class="admin-form-input" id="modal-work-cover-alt" value="${escapeHtml(coverAlt)}">
         </div>
         <div class="admin-form-group">
           <label class="admin-form-label">链接地址</label>
-          <input type="text" class="admin-form-input" id="modal-work-href" value="${item.href}">
+          <input type="text" class="admin-form-input" id="modal-work-href" value="${escapeHtml(item.href)}">
         </div>
       </div>
       <div class="admin-modal-footer">
@@ -1323,14 +1334,23 @@ function showWorkModal(index: number) {
     const title = (modal.querySelector("#modal-work-title") as HTMLInputElement).value;
     const meta = (modal.querySelector("#modal-work-meta") as HTMLInputElement).value;
     const href = (modal.querySelector("#modal-work-href") as HTMLInputElement).value;
+    const coverUrl = (modal.querySelector("#modal-work-cover") as HTMLInputElement).value;
+    const coverAlt = (modal.querySelector("#modal-work-cover-alt") as HTMLInputElement).value;
     if (siteData) {
-      const workData = { id, slug, title, meta, href, visual: item.visual };
+      const workData = {
+        id,
+        slug,
+        title,
+        meta,
+        href,
+        visual: { coverUrl, coverAlt },
+      };
       if (isEdit) {
         siteData.works[index] = workData;
       } else {
         siteData.works.push(workData);
       }
-      saveToSupabase();
+      saveSiteData();
       await render();
     }
     modal.remove();
@@ -1408,7 +1428,7 @@ function showInspirationModal(index: number) {
       } else {
         siteData.inspiration.items.push(inspItem);
       }
-      saveToSupabase();
+      saveSiteData();
       await render();
     }
     modal.remove();
