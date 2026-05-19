@@ -960,25 +960,7 @@ function renderContact() {
   `;
 }
 
-async function renderLeads() {
-  // 从 Supabase 获取客户提交信息
-  let leads: Array<{ id: string; phone: string; source: string; page_url: string; created_at: string }> = [];
-  
-  try {
-    const { data, error } = await supabase
-      .from("lead_submissions")
-      .select("*")
-      .order("created_at", { ascending: false });
-    
-    if (error) {
-      console.warn("从 Supabase 读取客户信息失败:", error.message);
-    } else if (data) {
-      leads = data;
-    }
-  } catch (e) {
-    console.warn("读取客户信息异常:", e);
-  }
-
+function renderLeads(leads: Array<{ id: string; phone: string; source: string; page_url: string; created_at: string }> = []) {
   const leadsList = leads.length > 0 
     ? leads.map((lead) => `
       <div class="admin-list-item">
@@ -1015,6 +997,24 @@ async function renderLeads() {
   `;
 }
 
+async function loadLeadsData() {
+  try {
+    const { data, error } = await supabase
+      .from("lead_submissions")
+      .select("*")
+      .order("created_at", { ascending: false });
+    
+    if (error) {
+      console.warn("从 Supabase 读取客户信息失败:", error.message);
+      return [];
+    }
+    return data || [];
+  } catch (e) {
+    console.warn("读取客户信息异常:", e);
+    return [];
+  }
+}
+
 async function renderContent() {
   switch (currentSection) {
     case "dashboard": return renderDashboard();
@@ -1022,7 +1022,7 @@ async function renderContent() {
     case "navigation": return renderNavigation();
     case "works": return renderWorks();
     case "inspiration": return renderInspiration();
-    case "leads": return await renderLeads();
+    case "leads": return renderLeads();
     case "hero": return renderHero();
     case "about": return renderAbout();
     case "services": return renderServices();
@@ -1045,6 +1045,66 @@ async function render() {
     </div>
   `;
   bindEvents();
+  
+  if (currentSection === "leads") {
+    loadLeadsData().then(leads => {
+      const leadsListEl = document.getElementById("leads-list");
+      if (leadsListEl) {
+        leadsListEl.innerHTML = leads.length > 0 
+          ? leads.map((lead) => `
+              <div class="admin-list-item">
+                <div class="admin-list-item-content">
+                  <div class="admin-list-item-title">${escapeHtml(lead.phone)}</div>
+                  <div class="admin-list-item-desc">来源：${escapeHtml(lead.source)} | ${new Date(lead.created_at).toLocaleString("zh-CN")}</div>
+                </div>
+                <div class="admin-list-item-actions">
+                  <button class="admin-btn admin-btn-danger admin-btn-sm" data-delete-lead="${lead.id}">删除</button>
+                </div>
+              </div>
+            `).join("")
+          : `<div class="admin-empty-state">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+              <p>暂无客户信息</p>
+              <p class="admin-empty-state-desc">当访客在前台提交联系方式后，会显示在这里</p>
+            </div>`;
+        
+        const badge = document.querySelector(".admin-card-badge");
+        if (badge) {
+          badge.textContent = leads.length.toString();
+        }
+        
+        document.querySelectorAll("[data-delete-lead]").forEach(btn => {
+          btn.addEventListener("click", async () => {
+            const leadId = (btn as HTMLElement).dataset.deleteLead!;
+            if (confirm("确定要删除这条客户信息吗？")) {
+              try {
+                const { error } = await supabase
+                  .from("lead_submissions")
+                  .delete()
+                  .eq("id", leadId);
+                
+                if (error) {
+                  console.warn("删除客户信息失败:", error.message);
+                  showToast("删除失败", "error");
+                } else {
+                  showToast("已删除", "success");
+                  await render();
+                }
+              } catch (e) {
+                console.warn("删除客户信息异常:", e);
+                showToast("删除失败", "error");
+              }
+            }
+          });
+        });
+      }
+    });
+  }
 }
 
 function updateAuthTimestamp() {
@@ -1152,32 +1212,6 @@ function bindInspirationEvents() {
         siteData.inspiration.items.splice(index, 1);
         saveToSupabase();
         await render();
-      }
-    });
-  });
-
-  // 删除客户信息
-  document.querySelectorAll("[data-delete-lead]").forEach(btn => {
-    btn.addEventListener("click", async () => {
-      const leadId = (btn as HTMLElement).dataset.deleteLead!;
-      if (confirm("确定要删除这条客户信息吗？")) {
-        try {
-          const { error } = await supabase
-            .from("lead_submissions")
-            .delete()
-            .eq("id", leadId);
-          
-          if (error) {
-            console.warn("删除客户信息失败:", error.message);
-            showToast("删除失败", "error");
-          } else {
-            showToast("已删除", "success");
-            await render();
-          }
-        } catch (e) {
-          console.warn("删除客户信息异常:", e);
-          showToast("删除失败", "error");
-        }
       }
     });
   });
