@@ -1,6 +1,15 @@
 import type { InspirationItem, NavigationLink } from "./types";
 import { createClient } from "@supabase/supabase-js";
 
+function escapeHtml(value: unknown) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL?.trim() || "";
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim() || "";
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
