@@ -998,6 +998,15 @@ function renderLeads(leads: Array<{ id: string; phone: string; source: string; p
 }
 
 async function loadLeadsData() {
+  console.log("开始加载客户信息...");
+  console.log("SUPABASE_URL:", SUPABASE_URL);
+  console.log("SUPABASE_ANON_KEY:", SUPABASE_ANON_KEY ? "已配置" : "未配置");
+  
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    console.error("Supabase 配置缺失，无法加载客户信息");
+    return [];
+  }
+  
   try {
     const { data, error } = await supabase
       .from("lead_submissions")
@@ -1005,12 +1014,14 @@ async function loadLeadsData() {
       .order("created_at", { ascending: false });
     
     if (error) {
-      console.warn("从 Supabase 读取客户信息失败:", error.message);
+      console.error("从 Supabase 读取客户信息失败:", error);
       return [];
     }
+    
+    console.log("成功加载客户信息:", data?.length || 0, "条");
     return data || [];
   } catch (e) {
-    console.warn("读取客户信息异常:", e);
+    console.error("读取客户信息异常:", e);
     return [];
   }
 }
