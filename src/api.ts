@@ -381,28 +381,30 @@ async function loadSupabaseSiteData(): Promise<HomeSiteData> {
         .order("sort_order", { ascending: true }),
     ]);
 
-    // 验证 Supabase 返回的数据是否有效
+    const fallback = loadFallbackSiteDataSync();
+    
+    // 处理 homepage 数据
+    let homepage = fallback.homepage;
     const content = homepageResponse.data?.content;
     if (content && typeof content === "object" && content.brand && content.hero) {
-      const homepageContent = normalizeHomepageContent(content);
-      const fallback = loadFallbackSiteDataSync();
-
-      return {
-        homepage: mergeDeep(fallback.homepage, homepageContent),
-        projects:
-          projectsResponse.data?.length
-            ? (projectsResponse.data as SupabaseProjectRow[]).map(normalizeProjectRow)
-            : fallback.projects,
-        socialLinks:
-          socialResponse.data?.length
-            ? (socialResponse.data as SupabaseSocialLinkRow[]).map(normalizeSocialLinkRow)
-            : fallback.socialLinks,
-      };
+      homepage = mergeDeep(fallback.homepage, normalizeHomepageContent(content));
     }
 
-    // Supabase 数据无效或没有数据，使用本地数据
-    console.log("Supabase 数据无效，使用本地数据");
-    return loadFallbackSiteDataSync();
+    // 处理 projects 数据 - 优先使用 Supabase 的 projects
+    const projects = projectsResponse.data?.length
+      ? (projectsResponse.data as SupabaseProjectRow[]).map(normalizeProjectRow)
+      : fallback.projects;
+
+    // 处理 social links 数据
+    const socialLinks = socialResponse.data?.length
+      ? (socialResponse.data as SupabaseSocialLinkRow[]).map(normalizeSocialLinkRow)
+      : fallback.socialLinks;
+
+    return {
+      homepage,
+      projects,
+      socialLinks,
+    };
   } catch (error) {
     console.warn("Supabase 请求失败，使用本地数据:", error);
     return loadFallbackSiteDataSync();
@@ -437,12 +439,22 @@ async function loadFallbackSiteData(): Promise<HomeSiteData> {
 }
 
 export async function getSiteData(): Promise<HomeSiteData> {
-  // 优先检查 localStorage 是否有后台修改的数据
+  // 优先从 Supabase 加载最新数据
+  try {
+    const supabaseData = await loadSupabaseSiteData();
+    if (supabaseData.projects.length > 0) {
+      console.log("从 Supabase 加载数据成功");
+      return supabaseData;
+    }
+  } catch (error) {
+    console.warn("Supabase 加载失败，尝试本地数据:", error);
+  }
+
+  // 其次检查 localStorage 是否有后台修改的数据
   const stored = localStorage.getItem("site_data");
   if (stored) {
     try {
       const parsed = JSON.parse(stored);
-      // 验证数据有效性 - 只要包含 brand 和 hero 就认为是有效数据
       if (parsed && typeof parsed === "object" && parsed.brand && parsed.hero) {
         console.log("从 localStorage 加载后台修改的数据", parsed);
         return {
@@ -460,7 +472,7 @@ export async function getSiteData(): Promise<HomeSiteData> {
     }
   }
 
-  // 前台直接从本地 JSON 文件加载，跳过 Supabase（国外服务器太慢）
+  // 最后从本地 JSON 文件加载
   console.log("从本地文件加载数据");
   return loadFallbackSiteDataSync();
 }
