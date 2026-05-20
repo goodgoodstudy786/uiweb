@@ -668,6 +668,7 @@ function renderInspirationPage(site: HomeSiteData) {
 
 function renderFooter(site: HomeSiteData, socialLinks: SocialLinkRow[], currentPage: "home" | "case" | "inspiration" | "works") {
   const activeSocialLinks = socialLinks.filter((link) => link.is_active);
+  const footerContactLinks = site.homepage.footer.contactLinks || [];
 
   return `
     <footer class="site-footer" id="contact">
@@ -702,11 +703,11 @@ function renderFooter(site: HomeSiteData, socialLinks: SocialLinkRow[], currentP
         </div>
         <div>
           <p class="tiny-label">联系</p>
-          ${activeSocialLinks.length
-            ? activeSocialLinks
+          ${footerContactLinks.length
+            ? footerContactLinks
                 .map((link) =>
-                  link.url && link.url !== "#"
-                    ? `<a href="${escapeAttr(link.url)}" target="_blank" rel="noreferrer">${escapeHtml(link.label)}</a>`
+                  link.href && link.href !== "#"
+                    ? `<a href="${escapeAttr(link.href)}" target="_blank" rel="noreferrer">${escapeHtml(link.label)}</a>`
                     : `<span>${escapeHtml(link.label)}</span>`,
                 )
                 .join("")

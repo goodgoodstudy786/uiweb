@@ -1421,6 +1421,7 @@ button.text-link {
   grid-template-columns: 1fr minmax(300px, 0.42fr);
   gap: 34px;
   padding: 42px 64px;
+  align-items: center;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
