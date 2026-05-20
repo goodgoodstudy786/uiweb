@@ -37,14 +37,20 @@ function renderLogo(brand: HomepageContent["brand"], href = "./") {
   `;
 }
 
-function renderMenu(site: HomeSiteData) {
+function renderMenu(site: HomeSiteData, currentPage: "home" | "case" | "inspiration" | "works") {
+  const navLinks = site.homepage.navigation.map((link) => {
+    let href = normalizeHref(link.href);
+    if (currentPage !== "home" && href.startsWith("#")) {
+      href = `index.html${href}`;
+    }
+    return `<a href="${escapeAttr(href)}">${escapeHtml(link.label)}</a>`;
+  }).join("");
+
   return `
     <nav class="menu-panel" aria-label="主导航">
       <div class="menu-panel-inner">
         <p class="tiny-label">${escapeHtml(site.homepage.navigationTitle || "导航")}</p>
-        ${site.homepage.navigation
-          .map((link) => `<a href="${escapeAttr(normalizeHref(link.href))}">${escapeHtml(link.label)}</a>`)
-          .join("")}
+        ${navLinks}
         <div class="menu-panel-contact">
           <svg class="menu-panel-contact-icon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
             <path d="M8.5 13.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm7 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2ZM12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2Zm0 18c-4.418 0-8-3.582-8-8s3.582-8 8-8 8 3.582 8 8-3.582 8-8 8Z"/>
@@ -56,7 +62,7 @@ function renderMenu(site: HomeSiteData) {
   `;
 }
 
-function renderHeader(site: HomeSiteData) {
+function renderHeader(site: HomeSiteData, currentPage: "home" | "case" | "inspiration" | "works") {
   return `
     <header class="site-header">
       ${renderLogo(site.homepage.brand)}
@@ -66,7 +72,7 @@ function renderHeader(site: HomeSiteData) {
         <span></span>
       </button>
     </header>
-    ${renderMenu(site)}
+    ${renderMenu(site, currentPage)}
   `;
 }
 
@@ -659,7 +665,7 @@ function renderInspirationPage(site: HomeSiteData) {
   `;
 }
 
-function renderFooter(site: HomeSiteData, socialLinks: SocialLinkRow[]) {
+function renderFooter(site: HomeSiteData, socialLinks: SocialLinkRow[], currentPage: "home" | "case" | "inspiration" | "works") {
   const activeSocialLinks = socialLinks.filter((link) => link.is_active);
 
   return `
@@ -684,7 +690,13 @@ function renderFooter(site: HomeSiteData, socialLinks: SocialLinkRow[]) {
         <div>
           <p class="tiny-label">${escapeHtml(site.homepage.footer.servicesTitle)}</p>
           ${site.homepage.footer.servicesLinks
-            .map((link) => `<a href="${escapeAttr(normalizeHref(link.href))}">${escapeHtml(link.label)}</a>`)
+            .map((link) => {
+              let href = normalizeHref(link.href);
+              if (currentPage !== "home" && href.startsWith("#")) {
+                href = `index.html${href}`;
+              }
+              return `<a href="${escapeAttr(href)}">${escapeHtml(link.label)}</a>`;
+            })
             .join("")}
         </div>
         <div>
@@ -775,9 +787,9 @@ export function renderPage(site: HomeSiteData, page: "home" | "case" | "inspirat
   return `
     <div class="app-shell ${bodyClass}">
       ${renderLoader(site)}
-      ${renderHeader(site)}
+      ${renderHeader(site, page)}
       ${content}
-      ${renderFooter(site, site.socialLinks)}
+      ${renderFooter(site, site.socialLinks, page)}
       ${renderLeadModal(site)}
     </div>
   `;
