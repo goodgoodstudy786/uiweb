@@ -508,6 +508,7 @@ button.text-link {
   gap: 24px;
   padding-bottom: 48px;
   border-bottom: 1px solid var(--line);
+  max-width: calc(100% - 96px);
 }
 
 .section-head h2 {
