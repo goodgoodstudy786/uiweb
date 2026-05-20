@@ -508,6 +508,7 @@ button.text-link {
   gap: 24px;
   padding-bottom: 48px;
   border-bottom: 1px solid var(--line);
+  max-width: calc(100% - 120px);
 }
 
 .section-head h2 {
@@ -1025,10 +1026,14 @@ button.text-link {
   padding-right: 30px;
 }
 
+.inspiration-copy .tiny-label {
+  margin-bottom: 24px;
+}
+
 .inspiration-copy h2 {
-  margin: 28px 0;
-  font-size: clamp(38px, 4.4vw, 72px);
-  line-height: 1.05;
+  margin: 0 0 24px;
+  font-size: clamp(28px, 3.5vw, 61px);
+  line-height: 1.1;
 }
 
 .inspiration-page-hero {
@@ -1036,16 +1041,20 @@ button.text-link {
   gap: 18px;
 }
 
+.inspiration-page-hero .tiny-label {
+  margin-bottom: 32px;
+}
+
 .inspiration-page-copy {
-  max-width: 980px;
+  max-width: calc(100% - 120px);
 }
 
 .inspiration-page-copy h1 {
   margin: 0;
-  font-size: clamp(56px, 7vw, 116px);
+  font-size: clamp(28px, 3.5vw, 61px);
   font-weight: 950;
   letter-spacing: 0;
-  line-height: 0.92;
+  line-height: 1.1;
 }
 
 .inspiration-page-copy h1 span {
@@ -1053,7 +1062,7 @@ button.text-link {
 }
 
 .inspiration-page-copy p {
-  max-width: 760px;
+  max-width: 100%;
   margin: 20px 0 0;
   color: var(--muted);
   font-size: 18px;
@@ -1062,6 +1071,7 @@ button.text-link {
 
 .inspiration-list-section {
   padding-top: 34px;
+  max-width: calc(100% - 120px);
 }
 
 .inspiration-list-head {
@@ -1230,10 +1240,12 @@ button.text-link {
 
 .inspiration-detail-actions {
   padding-top: 10px;
+  max-width: 100%;
 }
 
 .inspiration-detail-button {
   min-width: 160px;
+  display: inline-block;
 }
 
 .inspiration-detail-nav {

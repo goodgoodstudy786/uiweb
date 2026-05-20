@@ -614,7 +614,6 @@ function renderInspirationDetailPage(site: HomeSiteData, item: InspirationItem) 
   const body = item.body.length ? item.body : [item.description];
   const buttonHref = item.ctaHref || site.homepage.inspiration.pageHref || "/inspiration.html";
   const buttonLabel = item.ctaLabel || site.homepage.inspiration.detailButtonLabel || "立即前往";
-  const { previous, next } = getAdjacentInspirationItems(site.homepage.inspiration.items, item.slug);
 
   return `
     <main id="top">
@@ -634,25 +633,6 @@ function renderInspirationDetailPage(site: HomeSiteData, item: InspirationItem) 
             /^https?:\/\//i.test(buttonHref) ? 'target="_blank" rel="noreferrer"' : ""
           }>${escapeHtml(buttonLabel)}</a>
         </div>
-
-        <nav class="inspiration-detail-nav" aria-label="灵感快速切换">
-          ${
-            previous
-              ? `<a class="inspiration-detail-nav-link" href="${escapeAttr(getInspirationHref(previous))}">
-                  <span>上一篇</span>
-                  <strong>${escapeHtml(previous.title)}</strong>
-                </a>`
-              : `<span class="inspiration-detail-nav-link is-empty"><span>上一篇</span><strong>没有更多了</strong></span>`
-          }
-          ${
-            next
-              ? `<a class="inspiration-detail-nav-link" href="${escapeAttr(getInspirationHref(next))}">
-                  <span>下一篇</span>
-                  <strong>${escapeHtml(next.title)}</strong>
-                </a>`
-              : `<span class="inspiration-detail-nav-link is-empty"><span>下一篇</span><strong>没有更多了</strong></span>`
-          }
-        </nav>
       </section>
     </main>
   `;
