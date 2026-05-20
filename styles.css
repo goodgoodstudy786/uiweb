@@ -923,8 +923,8 @@ button.text-link {
   width: 320px;
   height: 400px;
   content: "";
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 38 40'%3E%3Ccircle cx='9' cy='20' r='9' fill='none' stroke='%23fff' stroke-width='3' opacity='0.95'/%3E%3Ccircle cx='15' cy='20' r='9' fill='none' stroke='%23fff' stroke-width='3' opacity='0.72'/%3E%3Ccircle cx='21' cy='20' r='9' fill='none' stroke='%23fff' stroke-width='3' opacity='0.54'/%3E%3Ccircle cx='27' cy='20' r='9' fill='none' stroke='%23fff' stroke-width='3' opacity='0.38'/%3E%3C/svg%3E");
-  background-size: 15% auto;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cellipse cx='9' cy='20' rx='9' ry='20' fill='none' stroke='%23fff' stroke-width='1.5' opacity='0.95'/%3E%3Cellipse cx='15' cy='20' rx='9' ry='20' fill='none' stroke='%23fff' stroke-width='1.5' opacity='0.72'/%3E%3Cellipse cx='21' cy='20' rx='9' ry='20' fill='none' stroke='%23fff' stroke-width='1.5' opacity='0.54'/%3E%3Cellipse cx='27' cy='20' rx='9' ry='20' fill='none' stroke='%23fff' stroke-width='1.5' opacity='0.38'/%3E%3C/svg%3E");
+  background-size: 25% auto;
   background-position: center;
   background-repeat: no-repeat;
   opacity: 0.04;
