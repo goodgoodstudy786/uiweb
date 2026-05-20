@@ -792,6 +792,8 @@ function renderCasePage(site, caseItem) {
       </section>
     </main>
 
+    ${renderFooter(site)}
+
     <script>
       window.__SITE_DATA__ = ${escapeScriptJson(site)};
       window.__CONTACT_SUBMIT_URL__ = "/api/lead";
@@ -844,6 +846,8 @@ function renderInspirationPage(site) {
         </div>
       </section>
     </main>
+
+    ${renderFooter(site)}
 
     <script>
       window.__SITE_DATA__ = ${escapeScriptJson(site)};
