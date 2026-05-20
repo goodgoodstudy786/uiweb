@@ -1054,7 +1054,7 @@ button.text-link {
   font-size: clamp(28px, 3.5vw, 61px);
   font-weight: 950;
   letter-spacing: 0;
-  line-height: 1.1;
+  line-height: 1.15;
 }
 
 .inspiration-page-copy h1 span {
@@ -1147,13 +1147,11 @@ button.text-link {
 
 .inspiration-item strong {
   display: block;
-  max-width: 680px;
   font-size: clamp(24px, 2.3vw, 40px);
   line-height: 1.14;
 }
 
 .inspiration-item p {
-  max-width: 720px;
   margin: 0;
   color: var(--muted);
   font-size: 16px;

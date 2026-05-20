@@ -231,7 +231,6 @@ function setupHoverTracking() {
 function setupMenu() {
   const menuButton = document.querySelector(".menu-button");
   const menuPanel = document.querySelector(".menu-panel");
-  const menuLinks = document.querySelectorAll(".menu-panel a");
 
   if (menuButton instanceof HTMLButtonElement) {
     menuButton.addEventListener("click", () => {
@@ -244,13 +243,14 @@ function setupMenu() {
     menuPanel.addEventListener("click", (event) => {
       if (event.target === menuPanel) {
         setMenu(false);
+        return;
+      }
+      const link = (event.target as Element).closest(".menu-panel a");
+      if (link) {
+        setMenu(false);
       }
     });
   }
-
-  menuLinks.forEach((link) => {
-    link.addEventListener("click", () => setMenu(false));
-  });
 }
 
 function setupLeadModal() {

@@ -652,11 +652,7 @@ function renderInspirationPage(site: HomeSiteData) {
         </div>
       </section>
 
-      <section class="section inspiration-list-section reveal" aria-labelledby="inspiration-list-title">
-        <div class="section-head inspiration-list-head">
-          <h2 id="inspiration-list-title">灵感列表</h2>
-          <p><span></span>文字排列</p>
-        </div>
+      <section class="section inspiration-list-section reveal">
         ${renderInspirationList(site.homepage.inspiration.items, false)}
       </section>
     </main>
