@@ -920,11 +920,13 @@ button.text-link {
   position: absolute;
   right: -80px;
   top: 300px;
-  content: "01";
-  color: rgba(255, 255, 255, 0.04);
-  font-size: clamp(180px, 28vw, 410px);
-  font-weight: 100;
-  line-height: 1;
+  width: 320px;
+  height: 400px;
+  content: "";
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 40'%3E%3Ccircle cx='9' cy='20' r='9' fill='none' stroke='%23fff' stroke-width='1.5' opacity='0.95'/%3E%3Ccircle cx='15' cy='20' r='9' fill='none' stroke='%23fff' stroke-width='1.5' opacity='0.72'/%3E%3Ccircle cx='21' cy='20' r='9' fill='none' stroke='%23fff' stroke-width='1.5' opacity='0.54'/%3E%3Ccircle cx='27' cy='20' r='9' fill='none' stroke='%23fff' stroke-width='1.5' opacity='0.38'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  opacity: 0.04;
 }
 
 .service-intro {
