@@ -1414,13 +1414,16 @@ button.text-link {
     radial-gradient(circle at 16% 12%, rgba(255, 0, 68, 0.34), transparent 34%),
     radial-gradient(circle at 78% 0, rgba(255, 0, 68, 0.28), transparent 30%),
     #14080b;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .footer-top {
   display: grid;
   grid-template-columns: 1fr minmax(300px, 0.42fr);
   gap: 34px;
-  padding: 42px 64px;
+  padding: 80px 64px;
   align-items: center;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
