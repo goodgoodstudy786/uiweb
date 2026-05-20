@@ -23,6 +23,7 @@ export interface InspirationItem {
   title: string;
   description: string;
   body: string[];
+  detailContent: EditorOutput | null;
   icon?: string;
   ctaLabel?: string;
   ctaHref?: string;

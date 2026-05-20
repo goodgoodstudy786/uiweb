@@ -620,6 +620,7 @@ function renderInspirationDetailPage(site: HomeSiteData, item: InspirationItem) 
   const body = item.body.length ? item.body : [item.description];
   const buttonHref = item.ctaHref || site.homepage.inspiration.pageHref || "/inspiration.html";
   const buttonLabel = item.ctaLabel || site.homepage.inspiration.detailButtonLabel || "立即前往";
+  const detailHtml = item.detailContent ? renderEditorContent(item.detailContent) : body.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("");
 
   return `
     <main id="top">
@@ -631,7 +632,7 @@ function renderInspirationDetailPage(site: HomeSiteData, item: InspirationItem) 
         </div>
 
         <article class="inspiration-detail-copy">
-          ${body.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("")}
+          ${detailHtml}
         </article>
 
         <div class="inspiration-detail-actions">

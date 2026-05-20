@@ -1,6 +1,7 @@
 import type { InspirationItem, NavigationLink } from "./types";
 import { createClient } from "@supabase/supabase-js";
 import { createEditor, getEditorData, destroyEditor, type EditorOutput } from "./editor";
+import { slugify } from "./api";
 
 function escapeHtml(value: unknown) {
   return String(value)
@@ -1522,43 +1523,49 @@ function showWorkModal(index: number) {
 
 function showInspirationModal(index: number) {
   const isEdit = index >= 0;
-  const item = isEdit && siteData ? siteData.inspiration.items[index] : { slug: "", title: "", description: "", body: [], ctaLabel: "立即前往", ctaHref: "https://example.com" };
+  const item = isEdit && siteData ? siteData.inspiration.items[index] : { slug: "", title: "", description: "", body: [], detailContent: null, ctaLabel: "立即前往", ctaHref: "https://example.com" };
+  const detailContent = (item as { detailContent?: EditorOutput | null }).detailContent || null;
 
   const modal = document.createElement("div");
   modal.className = "admin-modal-overlay";
   modal.innerHTML = `
-    <div class="admin-modal">
+    <div class="admin-modal admin-modal-large admin-modal-xl">
       <div class="admin-modal-header">
         <div class="admin-modal-title">${isEdit ? "编辑灵感条目" : "添加灵感条目"}</div>
         <button class="admin-modal-close">&times;</button>
       </div>
       <div class="admin-modal-body">
+        <div class="admin-section-title">基本信息</div>
         <div class="admin-form-row">
           <div class="admin-form-group">
-            <label class="admin-form-label">Slug</label>
-            <input type="text" class="admin-form-input" id="modal-insp-slug" value="${item.slug}">
+            <label class="admin-form-label">标题</label>
+            <input type="text" class="admin-form-input" id="modal-insp-title" value="${escapeHtml(item.title)}">
           </div>
           <div class="admin-form-group">
-            <label class="admin-form-label">标题</label>
-            <input type="text" class="admin-form-input" id="modal-insp-title" value="${item.title}">
+            <label class="admin-form-label">Slug（自动生成，可手动修改）</label>
+            <input type="text" class="admin-form-input" id="modal-insp-slug" value="${escapeHtml(item.slug)}" placeholder="输入标题后自动生成">
           </div>
         </div>
         <div class="admin-form-group">
-          <label class="admin-form-label">描述</label>
-          <textarea class="admin-form-textarea" id="modal-insp-desc">${item.description}</textarea>
+          <label class="admin-form-label">描述（自动取正文第一段，也可手动修改）</label>
+          <textarea class="admin-form-textarea" id="modal-insp-desc">${escapeHtml(item.description)}</textarea>
         </div>
+
+        <div class="admin-section-title">详情内容（富文本编辑器）</div>
         <div class="admin-form-group">
-          <label class="admin-form-label">正文内容 (每段一行)</label>
-          <textarea class="admin-form-textarea" id="modal-insp-body">${Array.isArray(item.body) ? item.body.join("\n") : ""}</textarea>
+          <label class="admin-form-label">使用编辑器添加文字、图片、标题等（支持图文混排）</label>
+          <div id="editor-container" style="border:1px solid var(--admin-border);border-radius:8px;min-height:300px;background:#fff;"></div>
         </div>
+
+        <div class="admin-section-title">跳转按钮</div>
         <div class="admin-form-row">
           <div class="admin-form-group">
             <label class="admin-form-label">按钮文字</label>
-            <input type="text" class="admin-form-input" id="modal-insp-cta-label" value="${item.ctaLabel || ""}">
+            <input type="text" class="admin-form-input" id="modal-insp-cta-label" value="${escapeHtml(item.ctaLabel || "")}">
           </div>
           <div class="admin-form-group">
             <label class="admin-form-label">按钮链接</label>
-            <input type="text" class="admin-form-input" id="modal-insp-cta-href" value="${item.ctaHref || ""}">
+            <input type="text" class="admin-form-input" id="modal-insp-cta-href" value="${escapeHtml(item.ctaHref || "")}">
           </div>
         </div>
       </div>
@@ -1571,22 +1578,74 @@ function showInspirationModal(index: number) {
 
   document.body.appendChild(modal);
 
-  modal.querySelector(".admin-modal-close")!.addEventListener("click", () => modal.remove());
-  modal.querySelector("#modal-insp-cancel")!.addEventListener("click", () => modal.remove());
+  const titleInput = modal.querySelector("#modal-insp-title") as HTMLInputElement;
+  const slugInput = modal.querySelector("#modal-insp-slug") as HTMLInputElement;
+  const descTextarea = modal.querySelector("#modal-insp-desc") as HTMLTextAreaElement;
+
+  titleInput.addEventListener("input", () => {
+    const title = titleInput.value.trim();
+    if (title && (!isEdit || slugInput.value === "")) {
+      slugInput.value = slugify(title, "inspiration");
+    }
+  });
+
+  const uploadImageToSupabase = async (file: File): Promise<string> => {
+    const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const ext = file.name.split(".").pop() || "png";
+    const random = Math.random().toString(36).substring(2, 8);
+    const fileName = `works/${Date.now()}_${random}.${ext}`;
+
+    const { error: uploadError } = await client.storage
+      .from("site-assets")
+      .upload(fileName, file);
+
+    if (uploadError) throw uploadError;
+
+    const { data } = client.storage
+      .from("site-assets")
+      .getPublicUrl(fileName);
+
+    return data.publicUrl;
+  };
+
+  createEditor("editor-container", detailContent || undefined, uploadImageToSupabase).catch(err => {
+    console.error("编辑器初始化失败:", err);
+  });
+
+  modal.querySelector(".admin-modal-close")!.addEventListener("click", async () => {
+    await destroyEditor();
+    modal.remove();
+  });
+  modal.querySelector("#modal-insp-cancel")!.addEventListener("click", async () => {
+    await destroyEditor();
+    modal.remove();
+  });
   modal.querySelector("#modal-insp-save")!.addEventListener("click", async () => {
-    const slug = (modal.querySelector("#modal-insp-slug") as HTMLInputElement).value;
     const title = (modal.querySelector("#modal-insp-title") as HTMLInputElement).value;
+    const slug = (modal.querySelector("#modal-insp-slug") as HTMLInputElement).value;
     const description = (modal.querySelector("#modal-insp-desc") as HTMLTextAreaElement).value;
-    const body = (modal.querySelector("#modal-insp-body") as HTMLTextAreaElement).value.split("\n").filter(line => line.trim());
     const ctaLabel = (modal.querySelector("#modal-insp-cta-label") as HTMLInputElement).value;
     const ctaHref = (modal.querySelector("#modal-insp-cta-href") as HTMLInputElement).value;
+
+    const editorData = await getEditorData();
+    const bodyTexts: string[] = [];
+    if (editorData && editorData.blocks) {
+      editorData.blocks.forEach((block) => {
+        if (block.type === "paragraph" && block.data && block.data.text) {
+          bodyTexts.push(String(block.data.text));
+        }
+      });
+    }
+    const finalDescription = description || (bodyTexts.length > 0 ? bodyTexts[0] : title);
+
     if (siteData) {
-      const inspItem = { slug, title, description, body, ctaLabel, ctaHref };
+      const inspItem = { slug, title, description: finalDescription, body: bodyTexts, detailContent: editorData, ctaLabel, ctaHref };
       if (isEdit) {
         siteData.inspiration.items[index] = inspItem;
       } else {
         siteData.inspiration.items.push(inspItem);
       }
+      await destroyEditor();
       saveSiteData();
       await render();
     }
@@ -1594,7 +1653,9 @@ function showInspirationModal(index: number) {
   });
 
   modal.addEventListener("click", (e) => {
-    if (e.target === modal) modal.remove();
+    if (e.target === modal) {
+      destroyEditor().then(() => modal.remove());
+    }
   });
 }
 

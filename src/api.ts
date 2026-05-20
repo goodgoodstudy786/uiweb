@@ -90,7 +90,7 @@ function mergeDeep<T>(base: T, override: unknown): T {
   return output as T;
 }
 
-function slugify(value: string, fallback: string) {
+export function slugify(value: string, fallback: string) {
   const slug = value
     .normalize("NFKD")
     .toLowerCase()
@@ -138,12 +138,14 @@ function normalizeInspirationItems(items: unknown): InspirationItem[] {
     const body = toStringArray((item as { body?: unknown }).body);
     const ctaHref = typeof item.ctaHref === "string" && item.ctaHref.trim() ? item.ctaHref.trim() : "";
     const ctaLabel = typeof item.ctaLabel === "string" && item.ctaLabel.trim() ? item.ctaLabel.trim() : "";
+    const detailContent = (item as { detailContent?: unknown }).detailContent as EditorOutput | null;
 
     return {
       slug,
       title,
       description,
       body: body.length ? body : buildFallbackInspirationBody(title, description),
+      detailContent: detailContent || null,
       icon: typeof item.icon === "string" && item.icon.trim() ? item.icon.trim() : undefined,
       ctaHref: ctaHref || undefined,
       ctaLabel: ctaLabel || undefined,
