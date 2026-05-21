@@ -640,22 +640,17 @@ if (backToTopButton) {
   const toggleBackToTop = () => {
     const scrollY = window.pageYOffset || document.documentElement.scrollTop;
     if (scrollY > scrollThreshold) {
-      backToTopButton.style.opacity = "1";
-      backToTopButton.style.pointerEvents = "auto";
+      backToTopButton.classList.add("is-visible");
     } else {
-      backToTopButton.style.opacity = "0";
-      backToTopButton.style.pointerEvents = "none";
+      backToTopButton.classList.remove("is-visible");
     }
   };
-
-  backToTopButton.style.opacity = "0";
-  backToTopButton.style.pointerEvents = "none";
-  backToTopButton.style.transition = "opacity 0.3s ease, background 0.25s, color 0.25s, box-shadow 0.25s, transform 0.25s";
 
   window.addEventListener("scroll", toggleBackToTop, { passive: true });
   toggleBackToTop();
 
-  backToTopButton.addEventListener("click", () => {
+  backToTopButton.addEventListener("click", (e) => {
+    e.preventDefault();
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
 }

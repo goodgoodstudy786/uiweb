@@ -1516,8 +1516,8 @@ button.text-link {
   position: fixed;
   right: 28px;
   bottom: 28px;
-  width: 56px;
-  height: 56px;
+  width: 50px;
+  height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1527,9 +1527,18 @@ button.text-link {
   color: var(--red);
   cursor: pointer;
   box-shadow: 0 0 20px rgba(255, 0, 68, 0.3);
-  transition: background 0.25s, color 0.25s, box-shadow 0.25s, transform 0.25s;
-  z-index: 100;
+  transition: opacity 0.3s ease, visibility 0.3s ease, background 0.25s, color 0.25s, box-shadow 0.25s, transform 0.25s;
+  z-index: 999;
   animation: breathe 3s ease-in-out infinite;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.back-to-top.is-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
 }
 
 @keyframes breathe {
