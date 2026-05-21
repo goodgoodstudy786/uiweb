@@ -1521,15 +1521,15 @@ button.text-link {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 50%;
-  background: #252525;
-  color: var(--red);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.45);
   cursor: pointer;
-  box-shadow: 0 0 20px rgba(255, 0, 68, 0.3);
-  transition: opacity 0.3s ease, visibility 0.3s ease, background 0.25s, color 0.25s, box-shadow 0.25s, transform 0.25s;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: opacity 0.3s ease, visibility 0.3s ease, background 0.25s, color 0.25s, border-color 0.25s, transform 0.25s;
   z-index: 999;
-  animation: breathe 3s ease-in-out infinite;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
@@ -1541,27 +1541,17 @@ button.text-link {
   pointer-events: auto;
 }
 
-@keyframes breathe {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(255, 0, 68, 0.3);
-  }
-  50% {
-    box-shadow: 0 0 30px rgba(255, 0, 68, 0.5);
-  }
-}
-
 .back-to-top:hover,
 .back-to-top.is-hovered {
-  background: #252525;
-  color: #fff;
-  box-shadow: 0 0 35px rgba(255, 0, 68, 0.6);
+  background: rgba(255, 0, 68, 0.12);
+  color: var(--red);
+  border-color: rgba(255, 0, 68, 0.25);
   transform: scale(1.08);
-  animation: none;
 }
 
 .back-to-top svg {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
 }
 
 .site-header a,
