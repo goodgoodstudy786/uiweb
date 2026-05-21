@@ -632,3 +632,23 @@ window.addEventListener("keyup", (event) => {
     setLeadModalOpen(false);
   }
 });
+
+const backToTopButton = document.getElementById("back-to-top");
+if (backToTopButton) {
+  const scrollThreshold = 400;
+
+  const toggleBackToTop = () => {
+    if (window.scrollY > scrollThreshold) {
+      backToTopButton.removeAttribute("hidden");
+    } else {
+      backToTopButton.setAttribute("hidden", "");
+    }
+  };
+
+  window.addEventListener("scroll", toggleBackToTop, { passive: true });
+  toggleBackToTop();
+
+  backToTopButton.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+}
