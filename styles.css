@@ -1516,32 +1516,43 @@ button.text-link {
   position: fixed;
   right: 28px;
   bottom: 28px;
-  width: 66px;
-  height: 66px;
+  width: 56px;
+  height: 56px;
   display: flex;
   align-items: center;
   justify-content: center;
   border: none;
   border-radius: 50%;
-  background: rgba(255, 0, 68, 0.15);
+  background: #252525;
   color: var(--red);
   cursor: pointer;
-  box-shadow: 0 0 24px rgba(255, 0, 68, 0.35), 0 0 60px rgba(255, 0, 68, 0.15);
+  box-shadow: 0 0 20px rgba(255, 0, 68, 0.3);
   transition: background 0.25s, color 0.25s, box-shadow 0.25s, transform 0.25s;
   z-index: 100;
+  animation: breathe 3s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(255, 0, 68, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(255, 0, 68, 0.5);
+  }
 }
 
 .back-to-top:hover,
 .back-to-top.is-hovered {
-  background: rgba(255, 0, 68, 0.25);
+  background: #252525;
   color: #fff;
-  box-shadow: 0 0 32px rgba(255, 0, 68, 0.5), 0 0 80px rgba(255, 0, 68, 0.2);
-  transform: scale(1.05);
+  box-shadow: 0 0 35px rgba(255, 0, 68, 0.6);
+  transform: scale(1.08);
+  animation: none;
 }
 
 .back-to-top svg {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
 }
 
 .site-header a,

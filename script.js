@@ -635,15 +635,22 @@ window.addEventListener("keyup", (event) => {
 
 const backToTopButton = document.getElementById("back-to-top");
 if (backToTopButton) {
-  const scrollThreshold = 400;
+  const scrollThreshold = 300;
 
   const toggleBackToTop = () => {
-    if (window.scrollY > scrollThreshold) {
-      backToTopButton.removeAttribute("hidden");
+    const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+    if (scrollY > scrollThreshold) {
+      backToTopButton.style.opacity = "1";
+      backToTopButton.style.pointerEvents = "auto";
     } else {
-      backToTopButton.setAttribute("hidden", "");
+      backToTopButton.style.opacity = "0";
+      backToTopButton.style.pointerEvents = "none";
     }
   };
+
+  backToTopButton.style.opacity = "0";
+  backToTopButton.style.pointerEvents = "none";
+  backToTopButton.style.transition = "opacity 0.3s ease, background 0.25s, color 0.25s, box-shadow 0.25s, transform 0.25s";
 
   window.addEventListener("scroll", toggleBackToTop, { passive: true });
   toggleBackToTop();
