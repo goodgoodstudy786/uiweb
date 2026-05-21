@@ -329,6 +329,32 @@ function setupLeadModal() {
   }
 }
 
+function setupBackToTop() {
+  const backToTopButton = document.getElementById("back-to-top");
+  if (!backToTopButton) {
+    return;
+  }
+
+  const scrollThreshold = 300;
+
+  const toggleBackToTop = () => {
+    const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+    if (scrollY > scrollThreshold) {
+      backToTopButton.classList.add("is-visible");
+    } else {
+      backToTopButton.classList.remove("is-visible");
+    }
+  };
+
+  window.addEventListener("scroll", toggleBackToTop, { passive: true });
+  toggleBackToTop();
+
+  backToTopButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+}
+
 function setupContactForm() {
   const form = document.querySelector<HTMLFormElement>("[data-contact-form]");
   if (!form) {
@@ -476,6 +502,7 @@ async function bootstrap() {
   setupHoverTracking();
   scrollToHashIfNeeded();
   window.addEventListener("hashchange", scrollToHashIfNeeded);
+  setupBackToTop();
 
   window.addEventListener("keyup", (event) => {
     if (event.key === "Escape") {
